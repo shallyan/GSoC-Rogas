@@ -6,7 +6,8 @@ import os
 
 class Application(tornado.web.Application):
     def __init__(self):
-        handlers = [(r'/', MainHandler)]
+        handlers = [(r'/', MainHandler),
+                    (r'/index.html', MainHandler)]
 
         settings = {'template_path': os.path.join(os.path.dirname(__file__), 'template'),
                     'static_path': os.path.join(os.path.dirname(__file__), 'static'),
