@@ -1,7 +1,7 @@
 #coding = utf-8
 
-from application import Application
-import config
+from backend.application import Application
+from backend import config
 import tornado.ioloop
 import tornado.options
 from tornado.options import define, options

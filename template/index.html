@@ -17,9 +17,6 @@
     <!-- Custom CSS -->
     <link href={{ static_url("css/rogas.css") }} rel="stylesheet">
 
-    <!-- Custom Fonts -->
-    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
 </head>
 
 <body>
@@ -50,10 +47,10 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
                     <li class="active">
-                        <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Relation Core </a>
+                        <a href="index.html"> Relation Core </a>
                     </li>
                     <li>
-                        <a href="tables.html"><i class="fa fa-fw fa-table"></i> Graphical View</a>
+                        <a href="tables.html"> Graphical View</a>
                     </li>
                 </ul>
             </div>
@@ -64,135 +61,135 @@
 
             <div class="container-fluid">
 
-                <div class="row">
-                    <form class="form-inline">
-                        <div class="form-group has-success has-feedback">
-                            <div class="input-group">
-                                <input type="text" class="form-control">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button">
-                                        <span class="glyphicon glyphicon-resize-vertical"></span>
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                        <button class="btn btn-success" type="button">
-                            <span class="glyphicon glyphicon-expand"></span>
-                        </button>
-                    </form>
-                </div>
-
-                <div class="row">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Relation Core</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover table-striped">
-                                    <thead>
-                                        <tr class="active">
-                                            <th>ID</th>
-                                            <th>AuthorID</th>
-                                            <th>CoAuthorID</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>330</td>
-                                            <td>30</td>
-                                        </tr>
-                                        <tr class="success">
-                                            <td>2</td>
-                                            <td>339</td>
-                                            <td>319</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr class="warning">
-                                            <td>4</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr>
-                                            <td>5</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr class="danger">
-                                            <td>6</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr>
-                                            <td>7</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr class="info">
-                                            <td>8</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr>
-                                            <td>9</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr class="success">
-                                            <td>10</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr>
-                                            <td>11</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr class="danger">
-                                            <td>12</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr>
-                                            <td>13</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                        <tr class="info">
-                                            <td>14</td>
-                                            <td>3320</td>
-                                            <td>3320</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="text-right">
-                                <a href="#">View All Data <i class="fa fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <ul id="query_tab" class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#query1" data-toggle="tab"> <strong> Query1 </strong>
+                                    <span class="glyphicon glyphicon-remove-sign"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#query2" data-toggle="tab"> <strong> Query2 </strong>
+                                    <span class="glyphicon glyphicon-remove-sign"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#add">
+                                    <span class="glyphicon glyphicon-plus-sign"></span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                </div>
-            </div>
-            <!-- /.row -->
 
-            <footer>
-                <p>&copy; 2016 Google Summer of Code</p>
-            </footer>
+                    <div class="panel-body">
+                        <div id=query_tab_content" class="tab-content">
+                            <div class="tab-pane fade in active" id="query1">
+                                <form class="form-horizontal">
+                                    <div class="form-group has-success">
+                                        <div class="input-group col-md-12">
+                                            <div class="input-group-addon">$</div>
+                                            <textarea class="form-control" rows="1" placeholder="Input query here"></textarea>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-success" type="button">
+                                                    <span class="glyphicon glyphicon-expand"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="tab-pane fade" id="query2">
+                                <form class="form-horizontal">
+                                    <div class="form-group has-success">
+                                        <div class="input-group col-md-12">
+                                            <div class="input-group-addon">$</div>
+                                            <textarea class="form-control" rows="1" placeholder="Input xxxquery here"></textarea>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-success" type="button">
+                                                    <span class="glyphicon glyphicon-expand"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div> <!-- query tab content-->
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <ul id="result_tab" class="nav nav-pills">
+                                        <li class="active">
+                                            <a href="#relation" data-toggle="tab">
+                                                <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#graph" data-toggle="tab">
+                                                <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="tab-pane fade" id="graph">
+                                    <span>Here are graphs!</span>
+                                </div>
+
+                                <div class="tab-pane fade in active" id="relation">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                                <tr class="active">
+                                                    <th>ID</th>
+                                                    <th>AuthorID</th>
+                                                    <th>CoAuthorID</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="danger">
+                                                    <td>12</td>
+                                                    <td>3320</td>
+                                                    <td>3320</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>13</td>
+                                                    <td>3320</td>
+                                                    <td>3320</td>
+                                                </tr>
+                                                <tr class="info">
+                                                    <td>14</td>
+                                                    <td>3320</td>
+                                                    <td>3320</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div> <!-- table-->
+                                </div> <!-- relation tab-->
+
+                            </div> <!-- inner panel -->
+                        </div> <!-- row -->
+                    </div> <!-- panel body-->
+                </div> <!-- panel -->
+
+                <footer>
+                    <p>&copy; 2016 Google Summer of Code</p>
+                </footer>
 
             </div>
-            <!-- /.container-fluid -->
+            <!-- container-fluid -->
 
         </div>
-        <!-- /#page-wrapper -->
+        <!-- page-wrapper -->
 
     </div>
-    <!-- /#wrapper -->
+    <!-- wrapper -->
 
+    <script src={{ static_url("js/jquery-2.2.4.min.js") }}></script>
     <!-- Bootstrap Core JavaScript -->
     <script src={{ static_url("bootstrap-3.3.6/js/bootstrap.min.js") }}></script>
 

@@ -9,8 +9,8 @@ class Application(tornado.web.Application):
         handlers = [(r'/', MainHandler),
                     (r'/index.html', MainHandler)]
 
-        settings = {'template_path': os.path.join(os.path.dirname(__file__), 'template'),
-                    'static_path': os.path.join(os.path.dirname(__file__), 'static'),
+        settings = {'template_path': os.path.join(os.path.dirname(__file__), '../template'),
+                    'static_path': os.path.join(os.path.dirname(__file__), '../static'),
                     'autoreload': True
                    }
 
