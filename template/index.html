@@ -8,24 +8,11 @@
         <div id="page-wrapper">
             <div class="container-fluid">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
-                        {% block query_tabs %} 
-                        {% end %}
-                    </div>
+                    {% block query_tabs %} 
+                    {% end %}
 
-                    <div class="panel-body">
-                        {% block query_input_panel %} 
-                        {% end %}
-                        <hr>
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                {% block query_result_tabs %} 
-                                {% end %}
-                            </div>
-                            {% block query_result_content %} 
-                            {% end %}
-                        </div>
-                    </div>
+                    {% block query_tab_content %} 
+                    {% end %}
 
                     {% block footer %}
                     {% end %}
@@ -72,111 +59,108 @@
 {% end %}
 
 {% block query_tabs %}
-    <ul id="query_tab" class="nav nav-tabs">
-        <li class="active">
-            <a href="#query1" data-toggle="tab"> <strong> Query1 </strong>
-                <span class="glyphicon glyphicon-remove-sign"></span>
-            </a>
-        </li>
-        <li>
-            <a href="#query2" data-toggle="tab"> <strong> Query2 </strong>
-                <span class="glyphicon glyphicon-remove-sign"></span>
-            </a>
-        </li>
-        <li>
-            <a href="#add">
-                <span class="glyphicon glyphicon-plus-sign"></span>
-            </a>
-        </li>
-    </ul>
-{% end %}
-
-{% block query_input_panel %}
-    <div id=query_tab_content" class="tab-content">
-        <div class="tab-pane fade in active" id="query1">
-            <form class="form-horizontal">
-                <div class="form-group has-success">
-                    <div class="input-group col-md-12">
-                        <div class="input-group-addon">$</div>
-                        <textarea class="form-control" rows="1" placeholder="Input query here"></textarea>
-                        <span class="input-group-btn">
-                            <button class="btn btn-success" type="button">
-                                <span class="glyphicon glyphicon-expand"></span>
-                            </button>
-                        </span>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div class="tab-pane fade" id="query2">
-            <form class="form-horizontal">
-                <div class="form-group has-success">
-                    <div class="input-group col-md-12">
-                        <div class="input-group-addon">$</div>
-                        <textarea class="form-control" rows="1" placeholder="Input xxxquery here"></textarea>
-                        <span class="input-group-btn">
-                            <button class="btn btn-success" type="button">
-                                <span class="glyphicon glyphicon-expand"></span>
-                            </button>
-                        </span>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div> <!-- query tab content-->
-{% end %}
-
-{% block query_result_tabs %}
-    <ul id="result_tab" class="nav nav-pills">
-        <li class="active">
-            <a href="#relation" data-toggle="tab">
-                <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>
-            </a>
-        </li>
-        <li>
-            <a href="#graph" data-toggle="tab">
-                <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>
-            </a>
-        </li>
-    </ul>
-{% end %}
-
-{% block query_result_content %}
-    <div class="tab-pane fade" id="graph">
-        <span>Here are graphs!</span>
+    <div class="panel-heading">
+        <ul id="query_tab" class="nav nav-tabs">
+            <li class="active">
+                <a href="#query1" data-toggle="tab"> <strong> Query1 </strong>
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                </a>
+            </li>
+            <li>
+                <a href="#query2" data-toggle="tab"> <strong> Query2 </strong>
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                </a>
+            </li>
+            <li>
+                <a href="#add">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                </a>
+            </li>
+        </ul>
     </div>
+{% end %}
 
-    <div class="tab-pane fade in active" id="relation">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped">
-                <thead>
-                    <tr class="active">
-                        <th>ID</th>
-                        <th>AuthorID</th>
-                        <th>CoAuthorID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="danger">
-                        <td>12</td>
-                        <td>3320</td>
-                        <td>3320</td>
-                    </tr>
-                    <tr>
-                        <td>13</td>
-                        <td>3320</td>
-                        <td>3320</td>
-                    </tr>
-                    <tr class="info">
-                        <td>14</td>
-                        <td>3320</td>
-                        <td>3320</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div> <!-- table-->
-    </div> <!-- relation tab-->
+{% block query_tab_content %}
+    <div id=query_tab_content" class="tab-content">
+        {% for index, id in enumerate([1, 2]) %}
+           {% if index == 0 %}
+           <div class="tab-pane fade" id={{ 'query' + str(id) }}>
+           {% else %}
+           <div class="tab-pane fade in active" id={{ 'query' + str(id) }}>
+           {% end %}
+           
+               <div class="panel-body">
+                    <!-- input panel -->
+                    <form class="form-horizontal">
+                        <div class="form-group has-success">
+                            <div class="input-group col-md-12">
+                                <div class="input-group-addon">$</div>
+                                <textarea class="form-control" rows="1" placeholder="Input query here"></textarea>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-success" type="button">
+                                        <span class="glyphicon glyphicon-expand"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- result tab: Relations/Graphs -->
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <ul id="result_tab" class="nav nav-pills">
+                            <li class="active">
+                                <a href={{ '#relation' + str(id) }} data-toggle="tab">
+                                    <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>
+                                </a>
+                            </li>
+                            <li>
+                                <a href={{ '#graph' + str(id) }} data-toggle="tab">
+                                    <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-pane fade" id= {{ 'graph' + str(id) }} >
+                        <span>Here are graphs!</span>
+                    </div>
+
+                    <div class="tab-pane fade in active" id={{ 'relation' + str(id) }} >
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr class="active">
+                                        <th>ID</th>
+                                        <th>AuthorID</th>
+                                        <th>CoAuthorID</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="danger">
+                                        <td>12</td>
+                                        <td>3320</td>
+                                        <td>3320</td>
+                                    </tr>
+                                    <tr>
+                                        <td>13</td>
+                                        <td>3320</td>
+                                        <td>3320</td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td>14</td>
+                                        <td>3320</td>
+                                        <td>3320</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div> <!-- table-->
+                    </div> <!-- relation tab-->
+                </div>
+            </div>
+        {% end %}
+    </div>
 {% end %}
 
 {% block footer %}
