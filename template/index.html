@@ -11,7 +11,7 @@
                     {% block query_tabs %} 
                     {% end %}
 
-                    {% block query_tab_content %} 
+                    {% block query_tab_contents %} 
                     {% end %}
 
                     {% block footer %}
@@ -47,10 +47,10 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav side-nav">
                 <li class="active">
-                    <a href="index.html"> Relation Core </a>
+                    <a href="#"> Relation Core </a>
                 </li>
                 <li>
-                    <a href="tables.html"> Graphical View</a>
+                    <a href="#"> Graphical View</a>
                 </li>
             </ul>
         </div>
@@ -61,73 +61,62 @@
 {% block query_tabs %}
     <div class="panel-heading">
         <ul id="query_tab" class="nav nav-tabs">
-            <li class="active">
-                <a href="#query1" data-toggle="tab"> <strong> Query1 </strong>
-                    <span class="glyphicon glyphicon-remove-sign"></span>
+            <li id="query0" class="active">
+                <a href="#query_content0" data-toggle="tab"> <strong> Query0 </strong>
                 </a>
             </li>
-            <li>
-                <a href="#query2" data-toggle="tab"> <strong> Query2 </strong>
-                    <span class="glyphicon glyphicon-remove-sign"></span>
-                </a>
-            </li>
-            <li>
-                <a href="#add">
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+            <li id="query_add">
+                <a href="#add_tab">
+                    <span class="glyphicon glyphicon-plus"></span> <strong> Add Tab </strong>
                 </a>
             </li>
         </ul>
     </div>
 {% end %}
 
-{% block query_tab_content %}
-    <div id=query_tab_content" class="tab-content">
-        {% for index, id in enumerate([1, 2]) %}
-           {% if index == 0 %}
-           <div class="tab-pane fade" id={{ 'query' + str(id) }}>
-           {% else %}
-           <div class="tab-pane fade in active" id={{ 'query' + str(id) }}>
-           {% end %}
-           
-               <div class="panel-body">
-                    <!-- input panel -->
-                    <form class="form-horizontal">
-                        <div class="form-group has-success">
-                            <div class="input-group col-md-12">
-                                <div class="input-group-addon">$</div>
-                                <textarea class="form-control" rows="1" placeholder="Input query here"></textarea>
-                                <span class="input-group-btn">
-                                    <button class="btn btn-success" type="button">
-                                        <span class="glyphicon glyphicon-expand"></span>
-                                    </button>
-                                </span>
-                            </div>
+{% block query_tab_contents %}
+    <div id="query_tab_content" class="tab-content">
+       <div class="tab-pane fade in active" id="query_content0" >
+           <div class="panel-body">
+                <!-- input panel -->
+                <form class="form-horizontal">
+                    <div class="form-group has-success">
+                        <div class="input-group col-md-12">
+                            <div class="input-group-addon">$</div>
+                            <textarea class="form-control" rows="1" placeholder="Input query here"></textarea>
+                            <span class="input-group-btn">
+                                <button class="btn btn-success" type="button">
+                                    <span class="glyphicon glyphicon-expand"></span>
+                                </button>
+                            </span>
                         </div>
-                    </form>
+                    </div>
+                </form>
+            </div>
+
+            <!-- result tab: Relations/Graphs -->
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <ul id="result_tab" class="nav nav-pills">
+                        <li class="active">
+                            <a href="#relation" data-toggle="tab">
+                                <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#graph" data-toggle="tab">
+                                <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
 
-                <!-- result tab: Relations/Graphs -->
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <ul id="result_tab" class="nav nav-pills">
-                            <li class="active">
-                                <a href={{ '#relation' + str(id) }} data-toggle="tab">
-                                    <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>
-                                </a>
-                            </li>
-                            <li>
-                                <a href={{ '#graph' + str(id) }} data-toggle="tab">
-                                    <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="tab-pane fade" id= {{ 'graph' + str(id) }} >
+                <div id=result_tab_content" class="tab-content">
+                    <div class="tab-pane fade" id="graph"> 
                         <span>Here are graphs!</span>
                     </div>
 
-                    <div class="tab-pane fade in active" id={{ 'relation' + str(id) }} >
+                    <div class="tab-pane fade in active" id="relation">
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover table-striped">
                                 <thead>
@@ -159,7 +148,7 @@
                     </div> <!-- relation tab-->
                 </div>
             </div>
-        {% end %}
+        </div>
     </div>
 {% end %}
 
