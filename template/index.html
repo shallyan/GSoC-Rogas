@@ -39,9 +39,27 @@
         </div>
         <!-- Top Menu Items -->
         <ul class="nav navbar-right top-nav">
-            <li> <a href="#"> Setting </a> </li>
-            <li> <a href="#"> About </a> </li>
-            <li> <a href="#"> History </a> </li>
+            <li> 
+                <a href="#" role="button" data-toggle="modal" data-target="#about_modal" > About </a>
+            </li>
+            <li> 
+                <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> Setting <span class="caret"></span> </a>
+                <ul id="setting" class="dropdown-menu">
+                    <li><a href="#">Maxnum</a></li>
+                    <li><a href="#">Maxnum</a></li>
+                    <li><a href="#">Maxnum</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> History <span class="caret"></span> </a>
+                <ul id="history_query" class="dropdown-menu">
+                    <li><a href="#">Recent Queries</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">Createxxxx1</a></li>
+                    <li><a href="#">Select</a></li>
+                    <li><a href="#">qqqq</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
@@ -56,6 +74,26 @@
         </div>
         <!-- navbar-collapse -->
     </nav>
+
+    <!-- Modal -->
+    <div class="modal fade" id="about_modal" tabindex="-1" role="dialog" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">About</h4>
+                </div>
+                <div class="modal-body">
+                    <p>This is Rogas Project</p>
+                </div>
+                <div class="modal-footer">
+                    <p>Rogas</p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% end %}
 
 {% block query_tabs %}
