@@ -17,9 +17,15 @@ function removeTab(id) {
 
     $('ul#query_tab > li').not('#query_add').not('#query' + id).each(function(i){ 
         var getAttr = $(this).attr('id').split('query');
-        $('ul#query_tab li#query' + getAttr[1]).attr('id', 'query' + i); 
+        var origin_id = getAttr[1];
+        $('ul#query_tab li#query' + origin_id).attr('id', 'query' + i); 
 
-        $('div#query_tab_content div#query_content' + getAttr[1]).attr('id', 'query_content' + i);
+        var tabContent = '<strong> Query' + i + '</strong>'; 
+        if (origin_id != 0) {
+            tabContent += '<button type="button" class="btn btn-warning btn-xs" onclick="removeTab(' + i + ');"><span class="glyphicon glyphicon-remove"></span></button>';
+        }
+        $('ul#query_tab a[href="#query_content' + origin_id + '"]').html(tabContent).attr('href', '#query_content' + i);
+        $('div#query_tab_content div#query_content' + origin_id).attr('id', 'query_content' + i);
     });
 
     return false;
