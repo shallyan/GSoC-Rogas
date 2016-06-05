@@ -27,7 +27,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top top-navbar" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav_bar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -37,30 +37,33 @@
                 <strong class="top-logo"> Rogas </strong> 
             </a>
         </div>
-        <!-- Top Menu Items -->
-        <ul class="nav navbar-right top-nav">
-            <li> 
-                <a href="#" role="button" data-toggle="modal" data-target="#about_modal" > About </a>
-            </li>
-            <li> 
-                <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> Setting <span class="caret"></span> </a>
-                <ul id="setting" class="dropdown-menu">
-                    <li><a href="#">Maxnum</a></li>
-                    <li><a href="#">Maxnum</a></li>
-                    <li><a href="#">Maxnum</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> History <span class="caret"></span> </a>
-                <ul id="history_query" class="dropdown-menu">
-                    <li><a href="#">Recent Queries</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Createxxxx1</a></li>
-                    <li><a href="#">Select</a></li>
-                    <li><a href="#">qqqq</a></li>
-                </ul>
-            </li>
-        </ul>
+
+        <div id="nav_bar" class="navbar-collapse collapse">
+            <!-- top menu items -->
+            <ul class="nav navbar-right navbar-nav top-nav">
+                <li> 
+                    <a href="#" role="button" data-toggle="modal" data-target="#about_modal" > <strong> About </strong> </a>
+                </li>
+                <li> 
+                    <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <strong> Setting </strong> <span class="caret"></span> </a>
+                    <ul id="setting" class="dropdown-menu">
+                        <li><a href="#">maxnum1</a></li>
+                        <li><a href="#">maxnum2</a></li>
+                        <li><a href="#">maxnum3</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <strong> History </strong> <span class="caret"></span> </a>
+                    <ul id="history_query" class="dropdown-menu">
+                        <li><a href="#">recent queries</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">createxxxx1</a></li>
+                        <li><a href="#">select</a></li>
+                        <li><a href="#">qqqq</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </nav>
 
     <!-- Modal -->
