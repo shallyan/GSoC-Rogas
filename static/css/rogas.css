@@ -10,20 +10,17 @@ body {
 
 @media(min-width:768px) {
     #wrapper {
-        padding-left: 225px;
-    }
-
-    #page-wrapper {
         padding: 10px;
     }
 }
 
 .top-logo {
+    padding: 0 25px;
     color: #ff0;
 }
 
 .top-nav {
-    padding: 0 15px;
+    padding: 0 25px;
 }
 
 .top-nav>li {
@@ -35,4 +32,8 @@ body {
     padding-top: 15px;
     padding-bottom: 15px;
     line-height: 20px;
+}
+
+.info-label {
+    display: inline-block;
 }
