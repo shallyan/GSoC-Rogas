@@ -14,9 +14,13 @@ body {
     }
 }
 
-.top-logo {
-    padding: 0 25px;
-    color: #ff0;
+.logo{
+    padding: 8px;
+}
+
+.logo-img {
+    padding-left: 20px;
+    height: 100%;
 }
 
 .top-nav {
