@@ -183,20 +183,18 @@
     <div id="query_tab_content" class="tab-content">
        <div class="tab-pane fade in active" id="query_content0" >
            <div class="panel-body">
-                <!-- input panel -->
-                <form class="form-horizontal">
-                    <div class="form-group has-success">
-                        <div class="input-group col-md-12">
-                            <div class="input-group-addon">$</div>
-                            <textarea class="form-control" rows="1" placeholder="Input query here"></textarea>
-                            <span class="input-group-btn">
-                                <button class="btn btn-success" type="button">
-                                    <span class="glyphicon glyphicon-expand"></span>
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-                </form>
+               <!-- input panel -->
+               <form class="form-horizontal">
+                   <div class="form-group has-success">
+                       <label class="col-md-1 control-label">$</label>
+                       <div class="col-md-10">
+                           <textarea class="form-control expanding" rows="1" placeholder="Input query here"></textarea>
+                       </div>
+                       <button class="btn btn-success" type="button">
+                           <span class="glyphicon glyphicon-expand"></span>
+                       </button>
+                   </div>
+               </form>
             </div>
 
             <!-- result tab: Relations/Graphs -->
