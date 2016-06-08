@@ -39,7 +39,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand logo"href="index.html"> 
+            <a class="navbar-brand logo"> 
                 <img alt="Rogas" class="logo-img" src={{ static_url("image/logo.png") }}>
                 </img>
             </a>
@@ -108,17 +108,26 @@
                     <div class="panel panel-warning">
                         <div class="panel-heading text-center">
                             <a data-toggle="collapse" data-parent="#database_content" href="#database_relation">
-                                <span class="glyphicon glyphicon-th"></span> <strong> Relation Core </strong>
+                                <span class="glyphicon glyphicon-th"></span> 
+                                <strong> Relation Core </strong>
                             </a>
                         </div>
                         <div id="database_relation" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <span class="label label-default info-label">Default</span>
-                                <span class="label label-primary info-label">Primary</span>
-                                <span class="label label-success info-label">Success</span>
-                                <span class="label label-info info-label">Info</span>
-                                <span class="label label-warning info-label">Warning</span>
-                                <span class="label label-danger info-label">Danger</span>
+                            <div id="label_relation_panel" class="panel-body">
+                                <hr id="relation_sep_line"></hr>
+
+                                <form class="form-horizontal">
+                                    <div class="form-group has-info">
+                                        <div class="input-group col-md-10 col-md-offset-1 input-group-sm">
+                                            <input id="relation_input" type="text" class="form-control" placeholder="Table name"></input>
+                                            <span class="input-group-btn">
+                                                <button id="add_relation_label" class="btn btn-success" type="button">
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -130,13 +139,21 @@
                             </a>
                         </div>
                         <div id="database_graph" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <span class="label label-default info-label">Default</span>
-                                <span class="label label-primary info-label">Primary</span>
-                                <span class="label label-success info-label">Success</span>
-                                <span class="label label-info info-label">Info</span>
-                                <span class="label label-warning info-label">Warning</span>
-                                <span class="label label-danger info-label">Danger</span>
+                            <div id="label_graph_panel" class="panel-body">
+                                <hr id="graph_sep_line"></hr>
+
+                                <form class="form-horizontal">
+                                    <div class="form-group has-info">
+                                        <div class="input-group col-md-10 col-md-offset-1 input-group-sm">
+                                            <input id="graph_input" type="text" class="form-control" placeholder="Table name"></input>
+                                            <span class="input-group-btn">
+                                                <button id="add_graph_label" class="btn btn-success" type="button">
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -221,7 +238,7 @@
                                         <td>3320</td>
                                         <td>3320</td>
                                     </tr>
-                                    <tr class="danger">
+                                    <tr class="info">
                                         <td>14</td>
                                         <td>3320</td>
                                         <td>3320</td>
