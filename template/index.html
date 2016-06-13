@@ -171,7 +171,7 @@
                 </a>
             </li>
             <li id="query_add">
-                <a href="#add_tab">
+                <a role="button">
                     <span class="glyphicon glyphicon-plus"></span> <strong> Add Tab </strong>
                 </a>
             </li>
@@ -184,69 +184,17 @@
        <div class="tab-pane fade in active" id="query_content0" >
            <div class="panel-body">
                <!-- input panel -->
-               <form class="form-horizontal">
+               <form class="form-horizontal" id="query_form0" method="post" action="/query">
                    <div class="form-group has-success">
                        <label class="col-md-1 control-label">$</label>
                        <div class="col-md-10">
-                           <textarea class="form-control expanding" rows="1" placeholder="Input query here"></textarea>
+                           <textarea id="query_text0" class="form-control expanding" rows="1" placeholder="Input query here"></textarea>
                        </div>
-                       <button class="btn btn-success" type="button">
+                       <button class="btn btn-success" type="button" onclick=runQuery(0) >
                            <span class="glyphicon glyphicon-expand"></span>
                        </button>
                    </div>
                </form>
-            </div>
-
-            <!-- result tab: Relations/Graphs -->
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <ul id="result_tab" class="nav nav-pills">
-                        <li class="active">
-                            <a href="#relation" data-toggle="tab">
-                                <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#graph" data-toggle="tab">
-                                <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div id=result_tab_content" class="tab-content">
-                    <div class="tab-pane fade" id="graph"> 
-                        <span>Here are graphs!</span>
-                    </div>
-
-                    <div class="tab-pane fade in active" id="relation">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-striped">
-                                <thead>
-                                    <tr class="active">
-                                        <th>ID</th>
-                                        <th>AuthorID</th>
-                                        <th>CoAuthorID</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for i in range(6) %}
-                                    <tr>
-                                        <td>13</td>
-                                        <td>3320</td>
-                                        <td>3320</td>
-                                    </tr>
-                                    <tr class="info">
-                                        <td>14</td>
-                                        <td>3320</td>
-                                        <td>3320</td>
-                                    </tr>
-                                    {% end %}
-                                </tbody>
-                            </table>
-                        </div> <!-- table-->
-                    </div> <!-- relation tab-->
-                </div>
             </div>
         </div>
     </div>

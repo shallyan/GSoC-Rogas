@@ -3,7 +3,7 @@ The queryConsole is to read the query input, show query results and display erro
 
 @author: minjian
 '''
-
+"""
 import psycopg2
 import queryParser
 import matGraphProcessor
@@ -11,12 +11,27 @@ import time
 import os
 from Tkinter import * #GUI package
 from pylsy import pylsytable #for print table
+"""
+
+class TableResult(object):
+    def __init__(self, column_list=None, row_content=None):
+        self.setColumnList(column_list)
+        self.setRowContent(row_content)
+
+    def setColumnList(self, column_list):
+        self.column_list = column_list
+
+    def setRowContent(self, row_content):
+        self.row_content = row_content 
+
+    def asDict(self):
+        return {'column_list': self.column_list, 'row_content': self.row_content}
 
 class QueryResult(object):
-    def __init__(self):
+    def __init__(self, result_type="string", result_content="None"):
         #type: string, table
-        self.result_type = "string" 
-        self.result_content = "None"
+        self.setType(result_type)
+        self.setContent(result_content)
 
     def setType(self, result_type):
         if result_type not in ["string", "table"]:
@@ -25,7 +40,12 @@ class QueryResult(object):
     
     def setContent(self, result_content):
         self.result_content = result_content
+    
+    def asDict(self):
+        content_val = self.result_content.asDict() if self.result_type == "table" else self.result_content
+        return {'type': self.result_type, 'content': content_val}
 
+"""
 #starts to execute the input query
 def execQuery(conn, cur, executeCommand):
     queryResult = QueryResult()
@@ -73,7 +93,7 @@ def ExtractTableResult(conn, cur):
     conn.commit() 
     return table
      
-def start(query):
+def start(query='select * from labelled_by limit 3;'):
     print 'Query:', query
     #starts the main function   
     homeDir = os.environ['HOME']
@@ -97,6 +117,7 @@ def start(query):
     cur = conn.cursor()
     
     start_time = time.time()
+    queryResult = QueryResult()
     try:
         queryResult = execQuery(conn, cur, query)
         print queryResult.result_content
@@ -104,10 +125,11 @@ def start(query):
         os.system("rm -fr /dev/shm/RG_Tmp_Graph/*")  #clear graphs on-the-fly
         queryParser.graphQueryAndResult.clear()  #clear parser's dictionary for result table names and graph sub-queries
     except psycopg2.ProgrammingError as reason:
-        print str(reason)
+        queryResult.setType("string")
+        queryResult.setContent(str(reason))
     finally:
         cur.close()
         conn.close()
 
-query = 'select * from labelled_by limit 3;'
-start(query)
+    return queryResult
+"""
