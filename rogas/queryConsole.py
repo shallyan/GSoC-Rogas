@@ -3,15 +3,11 @@ The queryConsole is to read the query input, show query results and display erro
 
 @author: minjian
 '''
-"""
 import psycopg2
 import queryParser
 import matGraphProcessor
 import time
 import os
-from Tkinter import * #GUI package
-from pylsy import pylsytable #for print table
-"""
 
 class TableResult(object):
     def __init__(self, column_list=None, row_content=None):
@@ -45,7 +41,6 @@ class QueryResult(object):
         content_val = self.result_content.asDict() if self.result_type == "table" else self.result_content
         return {'type': self.result_type, 'content': content_val}
 
-"""
 #starts to execute the input query
 def execQuery(conn, cur, executeCommand):
     queryResult = QueryResult()
@@ -84,17 +79,18 @@ def execQuery(conn, cur, executeCommand):
 
 #extract results received from the database
 def ExtractTableResult(conn, cur):
-    colnames = [desc[0] for desc in cur.description]
-    table = pylsytable(colnames)
+    column_list = [desc[0] for desc in cur.description]
+    rows_content = []
+
     rows = cur.fetchall()
     for each_row in rows:
-        for col_index, each_col in enumerate(each_row):
-            table.append_data(colnames[col_index], str(each_col))
+        one_row_content = [each_col for each_col in each_row]
+        rows_content.append(one_row_content)
     conn.commit() 
-    return table
+
+    return TableResult(column_list, rows_content)
      
-def start(query='select * from labelled_by limit 3;'):
-    print 'Query:', query
+def start(query):
     #starts the main function   
     homeDir = os.environ['HOME']
     memDir = "/dev/shm"
@@ -120,7 +116,6 @@ def start(query='select * from labelled_by limit 3;'):
     queryResult = QueryResult()
     try:
         queryResult = execQuery(conn, cur, query)
-        print queryResult.result_content
         #print "Total query time is: ", (time.time() - start_time)
         os.system("rm -fr /dev/shm/RG_Tmp_Graph/*")  #clear graphs on-the-fly
         queryParser.graphQueryAndResult.clear()  #clear parser's dictionary for result table names and graph sub-queries
@@ -132,4 +127,3 @@ def start(query='select * from labelled_by limit 3;'):
         conn.close()
 
     return queryResult
-"""

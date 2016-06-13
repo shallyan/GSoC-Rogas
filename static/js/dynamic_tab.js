@@ -118,7 +118,7 @@ function querySuccess(response)
         </div>';
     }
     else {
-        insert_html = '<p>' + result_content + '</p>';
+        insert_html = '<div id="rg_result' + tab_index + '"<p>' + result_content + '</p></div>';
     }
 
     $('#query_form' + tab_index).after(insert_html);

@@ -18,8 +18,6 @@ class QueryHandler(BaseHandler):
         query = self.get_argument('query')
         tab_index = self.get_argument('tab_index')
 
-        #queryResult = queryConsole.QueryResult()
-        tableResult = queryConsole.TableResult(["id", "AId", "CoAId"], [[1,2,3], [1,2,4], [2,1,5]])
-        queryResult = queryConsole.QueryResult("table", tableResult);
+        queryResult = queryConsole.start(query)
         actResult = {'tab_index': tab_index, 'result': queryResult.asDict()}
         self.write(actResult)
