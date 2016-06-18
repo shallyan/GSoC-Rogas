@@ -186,13 +186,14 @@
                <!-- input panel -->
                <form class="form-horizontal" id="query_form0" method="post" action="/query">
                    <div class="form-group has-success">
-                       <label class="col-md-1 control-label">$</label>
-                       <div class="col-md-10">
+                       <div class="col-md-11">
                            <textarea id="query_text0" class="form-control expanding" rows="1" placeholder="Input query here"></textarea>
                        </div>
-                       <button class="btn btn-success" type="button" onclick=runQuery(0) >
-                           <span class="glyphicon glyphicon-expand"></span>
-                       </button>
+                       <div class="col-md-1">
+                           <button class="btn btn-success" type="button" onclick=runQuery(0) >
+                               <span class="glyphicon glyphicon-expand"></span>
+                           </button>
+                       </div>
                    </div>
                </form>
             </div>

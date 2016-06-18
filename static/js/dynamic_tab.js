@@ -10,12 +10,13 @@ $(function () {
                 <div class="panel-body">\
                     <form class="form-horizontal" id="query_form' + tab_index + '" method="post" action="/query">\
                         <div class="form-group has-success">\
-                            <label class="col-md-1 control-label">$</label>\
-                            <div class="col-md-10">\
+                            <div class="col-md-11">\
                                 <textarea id="query_text' + tab_index + '" class="form-control" rows="1" placeholder="Input query here" onclick=initExpanding(' + tab_index + ')></textarea>\
                             </div>\
-                            <button type="button" onclick=runQuery(' + tab_index + ') class="btn btn-success"><span class="glyphicon glyphicon-expand"></span>\
-                            </button>\
+                            <div class="col-md-1">\
+                                <button type="button" onclick=runQuery(' + tab_index + ') class="btn btn-success"><span class="glyphicon glyphicon-expand"></span>\
+                                </button>\
+                            </div>\
                         </div>\
                     </form>\
                 </div>\
