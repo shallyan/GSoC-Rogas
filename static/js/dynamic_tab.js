@@ -149,7 +149,11 @@ function querySuccess(response)
         </div>';
     }
     else {
-        insert_html = '<div style="display: none" id="rg_result' + tab_index + '"<p>' + result_content + '</p></div>';
+        insert_html = '<div style="display: none" id="rg_result' + tab_index + '">\
+                           <div class="alert alert-info" role="alert">\
+                               <p>' + result_content + '</p>\
+                           </div>\
+                       </div>';
     }
 
     $('#query_form' + tab_index).after(insert_html);
