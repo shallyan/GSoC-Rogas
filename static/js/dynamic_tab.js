@@ -100,7 +100,7 @@ function querySuccess(response)
     {
         insert_html = '\
             <!-- result tab: Relations/Graphs -->\
-            <div class="panel panel-info" id="rg_result' + tab_index + '">\
+            <div class="panel panel-info" style="display: none" id="rg_result' + tab_index + '">\
                 <div class="panel-heading">\
                     <ul id="result_tab" class="nav nav-pills">\
                         <li class="active">\
@@ -149,10 +149,11 @@ function querySuccess(response)
         </div>';
     }
     else {
-        insert_html = '<div id="rg_result' + tab_index + '"<p>' + result_content + '</p></div>';
+        insert_html = '<div style="display: none" id="rg_result' + tab_index + '"<p>' + result_content + '</p></div>';
     }
 
     $('#query_form' + tab_index).after(insert_html);
+    $('#rg_result' + tab_index).fadeIn();
 }
 
 function queryError(response)
