@@ -14,7 +14,8 @@ $(function () {
                                 <textarea id="query_text' + tab_index + '" class="form-control" rows="1" placeholder="Input query here" onclick=initExpanding(' + tab_index + ')></textarea>\
                             </div>\
                             <div class="col-md-1">\
-                                <button type="button" onclick=runQuery(' + tab_index + ') class="btn btn-success"><span class="glyphicon glyphicon-expand"></span>\
+                                <button id="query_btn' + tab_index + '" type="button" onclick=runQuery(' + tab_index + ') class="btn btn-success">\
+                                    <span class="glyphicon glyphicon-expand"></span>\
                                 </button>\
                             </div>\
                         </div>\
@@ -48,6 +49,9 @@ function removeTab(tab_index) {
 }
 
 function runQuery(tab_index) {
+    //set up button disabled
+    $('#query_btn' + tab_index).prop('disabled', true);
+
     //remove result panel firstly
     if ($('#rg_result' + tab_index).length > 0) {
         $('#rg_result' + tab_index).remove();
@@ -91,6 +95,8 @@ function querySuccess(response)
     var tab_index = response.tab_index;
     //remove loading progress
     $('#query_progress' + tab_index).remove();
+    //enable run button
+    $('#query_btn' + tab_index).prop('disabled', false);
 
     var result_type = response.result.type;
     var result_content = response.result.content;
@@ -164,4 +170,6 @@ function queryError(response)
 {
     console.log("ERROR:", response)
     alert("There is something wrong: can't connect to server" + response);
+
+    $('button').prop('disabled', false);
 }
