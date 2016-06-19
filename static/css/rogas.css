@@ -41,3 +41,8 @@ body {
 .info-label {
     display: inline-block;
 }
+
+.progress-bar {
+    -webkit-transition: none;
+    transition: none;
+}
