@@ -1,12 +1,14 @@
 #coding = utf-8
 
 import tornado.web
-from handler import MainHandler, QueryHandler
+from handler import MainHandler, QueryHandler, LoadResultHandler
 import os
+from rogas import queryConsole
 
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [(r'/', MainHandler),
+                    (r'/load_result', LoadResultHandler),
                     (r'/query', QueryHandler)]
 
         settings = {'template_path': os.path.join(os.path.dirname(__file__), '../template'),
@@ -16,3 +18,5 @@ class Application(tornado.web.Application):
                    }
 
         tornado.web.Application.__init__(self, handlers, **settings)
+
+        queryConsole.prepare()

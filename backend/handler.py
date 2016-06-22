@@ -21,3 +21,13 @@ class QueryHandler(BaseHandler):
         queryResult = queryConsole.start(query)
         actResult = {'tab_index': tab_index, 'result': queryResult.asDict()}
         self.write(actResult)
+
+class LoadResultHandler(BaseHandler):
+    def post(self):
+        query_id = int(self.get_argument('query_id'))
+        is_next = int(self.get_argument('is_next'))
+        tab_index = self.get_argument('tab_index')
+
+        queryResult = queryConsole.fetch(query_id, is_next)
+        actResult = {'tab_index': tab_index, 'result': queryResult.asDict()}
+        self.write(actResult)

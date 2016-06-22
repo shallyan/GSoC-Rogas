@@ -48,7 +48,8 @@ function removeTab(tab_index) {
     return false;
 }
 
-function runQuery(tab_index) {
+function prepareResult(tab_index)
+{
     //set up button disabled
     $('#query_btn' + tab_index).prop('disabled', true);
 
@@ -67,7 +68,11 @@ function runQuery(tab_index) {
             </div>');
     }
 
-    loading(tab_index);
+    loadingAnimation(tab_index);
+}
+
+function runQuery(tab_index) {
+    prepareResult(tab_index);
 
     var query_str = $('#query_text' + tab_index).val();
     var args = {'query': query_str, 'tab_index': tab_index};
@@ -77,7 +82,7 @@ function runQuery(tab_index) {
     });
 }
 
-function loading(tab_index)
+function loadingAnimation(tab_index)
 {
     if ($('#query_progress' + tab_index).length > 0) {
         $('#query_progress' + tab_index + ' .progress-bar').attr('style', 'width: 0%');
@@ -85,7 +90,7 @@ function loading(tab_index)
         $('#query_progress' + tab_index + ' .progress-bar').animate({
             width: "100%"
         }, 5500, function(){
-            loading(tab_index);
+            loadingAnimation(tab_index);
         });
     }
 }
@@ -150,9 +155,30 @@ function querySuccess(response)
                             </table>\
                         </div> <!-- table-->\
                     </div> <!-- relation tab-->\
-                </div>\
-            </div>\
-        </div>';
+                </div>';
+
+                var is_begin = result_content.is_begin;
+                var is_end = result_content.is_end;
+                if (is_end == 0 || is_begin == 0)
+                {
+                    insert_html += '\
+                    <nav>\
+                        <ul class="pager">'
+                    
+                    var query_id = result_content.query_id;
+                    if (is_begin == 0)
+                        insert_html += '\
+                             <li class="previous"><a role="button" onclick="loadingNewPage(' + tab_index + ', ' + query_id + ', 0); return false" ><span>&larr;</span> Previous </a></li>';
+                    if (is_end == 0)
+                        insert_html += '\
+                             <li class="next"><a role="button" onclick="loadingNewPage(' + tab_index + ', ' + query_id + ', 1); return false" > Next <span>&rarr;</span></a></li>';
+                    insert_html += '\
+                        </ul>\
+                    </nav>';
+                }
+
+                insert_html += '\
+            </div>';
     }
     else {
         insert_html = '<div style="display: none" id="rg_result' + tab_index + '">\
@@ -169,7 +195,17 @@ function querySuccess(response)
 function queryError(response)
 {
     console.log("ERROR:", response)
-    alert("There is something wrong: can't connect to server" + response);
+    alert("There is something wrong: can't connect to server, " + response);
 
     $('button').prop('disabled', false);
+}
+
+function loadingNewPage(tab_index, query_id, is_next) {
+    prepareResult(tab_index);
+
+    var args = {'query_id': query_id, 'tab_index': tab_index, 'is_next': is_next};
+
+    $.ajax({url: '/load_result', data: $.param(args), dataType: 'json', type: 'POST',
+        success: querySuccess, error: queryError
+    });
 }
