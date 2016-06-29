@@ -153,9 +153,7 @@ function querySuccess(response)
                 }
                 insert_html += '</tbody>\
                             </table>\
-                        </div> <!-- table-->\
-                    </div> <!-- relation tab-->\
-                </div>';
+                        </div> <!-- table-->';
 
                 var is_begin = result_content.is_begin;
                 var is_end = result_content.is_end;
@@ -178,6 +176,8 @@ function querySuccess(response)
                 }
 
                 insert_html += '\
+                    </div> <!-- relation tab-->\
+                </div>\
             </div>';
     }
     else {
