@@ -63,7 +63,7 @@ class ResultManager(object):
         cursor.scroll(start_index, mode='absolute')
         rows = cursor.fetchmany(max_number)
         for each_row in rows:
-            one_row_content = [each_col for each_col in each_row]
+            one_row_content = [str(each_col) for each_col in each_row]
             rows_content.append(one_row_content)
 
         is_end = 1 if cursor.rownumber == cursor.rowcount else 0
