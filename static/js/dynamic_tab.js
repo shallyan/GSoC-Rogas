@@ -107,8 +107,9 @@ function querySuccess(response)
     var result_content = response.result.content;
 
     var insert_html = ''
-    if (result_type == "table")
+    if (result_type != "string")
     {
+        //relation tab
         insert_html = '\
             <!-- result tab: Relations/Graphs -->\
             <div class="panel panel-info" style="display: none" id="rg_result' + tab_index + '">\
@@ -118,64 +119,79 @@ function querySuccess(response)
                             <a href="#relation' + tab_index + '" data-toggle="tab">\
                                 <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>\
                             </a>\
-                        </li>\
+                        </li>';
+
+        //if the type is table_graph, add graph tab
+        if (result_type == "table_graph")
+        {
+            insert_html += '\
                         <li>\
                             <a href="#graph' + tab_index + '" data-toggle="tab">\
                                 <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>\
                             </a>\
-                        </li>\
+                        </li>';
+        }
+
+        insert_html += '\
                     </ul>\
                 </div>\
-                <div id=result_tab_content" class="tab-content">\
+                <div id=result_tab_content" class="tab-content">';
+
+        if (result_type == "table_graph")
+        {
+            insert_html += '\
                     <div class="tab-pane fade" id="graph' + tab_index + '"> \
                         <span>Here are graphs!</span>\
-                    </div>\
+                    </div>';
+        }
+        insert_html += '\
                     <div class="tab-pane fade in active" id="relation' + tab_index + '">\
                         <div class="table-responsive">\
                             <table class="table table-bordered table-hover table-striped">\
                                 <thead>\
                                     <tr class="active">';
 
-                var column_list = result_content.column_list;
-                for (var col_index = 0; col_index < column_list.length; ++col_index)
-                    insert_html += '<th>' + column_list[col_index] + '</th>';
-                insert_html += '\
+        var column_list = result_content.column_list;
+        for (var col_index = 0; col_index < column_list.length; ++col_index)
+            insert_html += '<th>' + column_list[col_index] + '</th>';
+        insert_html += '\
                                     </tr>\
                                 </thead>\
                                 <tbody>';
-                var row_content = result_content.row_content;
-                for (var row_index = 0; row_index < row_content.length; ++row_index)
-                {
-                    insert_html += '<tr>';
-                    for (var col_index = 0; col_index < row_content[row_index].length; ++col_index)
-                        insert_html += '<td>' + row_content[row_index][col_index] + '</td>';
-                    insert_html += '<tr>';
-                }
-                insert_html += '</tbody>\
+        var row_content = result_content.row_content;
+        for (var row_index = 0; row_index < row_content.length; ++row_index)
+        {
+            insert_html += '<tr>';
+            for (var col_index = 0; col_index < row_content[row_index].length; ++col_index)
+                insert_html += '<td>' + row_content[row_index][col_index] + '</td>';
+            insert_html += '<tr>';
+        }
+
+        insert_html += '</tbody>\
                             </table>\
                         </div> <!-- table-->';
 
-                var is_begin = result_content.is_begin;
-                var is_end = result_content.is_end;
-                if (is_end == 0 || is_begin == 0)
-                {
-                    insert_html += '\
-                    <nav>\
-                        <ul class="pager">'
-                    
-                    var query_id = result_content.query_id;
-                    if (is_begin == 0)
-                        insert_html += '\
-                             <li class="previous"><a role="button" onclick="loadingNewPage(' + tab_index + ', ' + query_id + ', 0); return false" ><span>&larr;</span> Previous </a></li>';
-                    if (is_end == 0)
-                        insert_html += '\
-                             <li class="next"><a role="button" onclick="loadingNewPage(' + tab_index + ', ' + query_id + ', 1); return false" > Next <span>&rarr;</span></a></li>';
-                    insert_html += '\
-                        </ul>\
-                    </nav>';
-                }
-
+        var is_begin = result_content.is_begin;
+        var is_end = result_content.is_end;
+        if (is_end == 0 || is_begin == 0)
+        {
+            insert_html += '\
+                        <nav>\
+                            <ul class="pager">'
+                
+            var query_id = result_content.query_id;
+            if (is_begin == 0)
                 insert_html += '\
+                                 <li class="previous"><a role="button" onclick="loadingNewPage(' + tab_index + ', ' + query_id + ', 0); return false" ><span>&larr;</span> Previous </a></li>';
+                if (is_end == 0)
+                    insert_html += '\
+                                 <li class="next"><a role="button" onclick="loadingNewPage(' + tab_index + ', ' + query_id + ', 1); return false" > Next <span>&rarr;</span></a></li>';
+                insert_html += '\
+                            </ul>\
+                        </nav>';
+            }
+
+            insert_html += '\
                     </div> <!-- relation tab-->\
                 </div>\
             </div>';

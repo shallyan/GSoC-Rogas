@@ -26,7 +26,7 @@ def execQuery(conn, cur, executeCommand):
         #print "Total operation time is: ", (time.time() - startTime)
         #print newExecuteCommand  #for debug
         cur.execute(newExecuteCommand[:]) #remove the first space
-        queryResult.setType("table")
+        queryResult.setType("table_graph")
         queryResult.setContent(SingleResultManager.extractTableResultFromCursor(cur))
     
     #query about creating or dropping a materialised graph    
@@ -48,7 +48,7 @@ def execQuery(conn, cur, executeCommand):
     conn.commit() 
     return queryResult
 
-g_conn = psycopg2.connect(database=config.DB, user=config.DB_USER, password=config.DB_PASSWORD, port=config.DB_PORT)
+SingleConnection = psycopg2.connect(database=config.DB, user=config.DB_USER, password=config.DB_PASSWORD, port=config.DB_PORT)
 
 def prepare():
     homeDir = os.environ['HOME']
@@ -61,20 +61,19 @@ def prepare():
         os.mkdir(memDir + "/RG_Tmp_Graph")    
 
 def start(query):
-    cur = g_conn.cursor()
+    cur = SingleConnection.cursor()
     
     start_time = time.time()
     queryResult = QueryResult()
     try:
-        queryResult = execQuery(g_conn, cur, query)
+        queryResult = execQuery(SingleConnection, cur, query)
         #print "Total query time is: ", (time.time() - start_time)
         os.system("rm -fr /dev/shm/RG_Tmp_Graph/*")  #clear graphs on-the-fly
-        queryParser.graphQueryAndResult.clear()  #clear parser's dictionary for result table names and graph sub-queries
     except psycopg2.ProgrammingError as reason:
         queryResult.setType("string")
         queryResult.setContent(str(reason))
 
-    g_conn.rollback()
+    SingleConnection.rollback()
 
     return queryResult
 

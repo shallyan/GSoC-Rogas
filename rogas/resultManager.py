@@ -22,20 +22,20 @@ class TableResult(object):
 
 class QueryResult(object):
     def __init__(self, result_type='string', result_content='None'):
-        #type: string, table
+        #type: string, table, table+graph
         self.setType(result_type)
         self.setContent(result_content)
 
     def setType(self, result_type):
-        if result_type not in ['string', 'table']:
-            raise TypeError('Query result type must be string or table') 
+        if result_type not in ['string', 'table', 'table_graph']:
+            raise TypeError('Query result type must be string, table or table_graph') 
         self.result_type = result_type
     
     def setContent(self, result_content):
         self.result_content = result_content
     
     def asDict(self):
-        content_val = self.result_content.asDict() if self.result_type == 'table' else self.result_content
+        content_val = self.result_content if self.result_type == 'string' else self.result_content.asDict()
         return {'type': self.result_type, 'content': content_val}
 
 class ResultManager(object):
