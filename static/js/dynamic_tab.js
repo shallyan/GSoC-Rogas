@@ -109,6 +109,7 @@ function querySuccess(response)
     var insert_html = ''
     if (result_type != "string")
     {
+        var table_content = result_content.table;
         //relation tab
         insert_html = '\
             <!-- result tab: Relations/Graphs -->\
@@ -139,9 +140,25 @@ function querySuccess(response)
 
         if (result_type == "table_graph")
         {
+            var graph_content = result_content.graph;
+            var graph_name = graph_content.name;
+            var graph_type = graph_content.graph_type;
+            var graph_operator = graph_content.operator;
+
             insert_html += '\
                     <div class="tab-pane fade" id="graph' + tab_index + '"> \
-                        <span>Here are graphs!</span>\
+                        <div>\
+                            <span>Here are graphs!</span>\
+                        </div>\
+                        <div>\
+                            <span>GraphName: ' + graph_name + '</span>\
+                        </div>\
+                        <div>\
+                            <span>GraphType: ' + graph_type + '</span>\
+                        </div>\
+                        <div>\
+                            <span>GraphOperator: ' + graph_operator + '</span>\
+                        </div>\
                     </div>';
         }
         insert_html += '\
@@ -151,14 +168,14 @@ function querySuccess(response)
                                 <thead>\
                                     <tr class="active">';
 
-        var column_list = result_content.column_list;
+        var column_list = table_content.column_list;
         for (var col_index = 0; col_index < column_list.length; ++col_index)
             insert_html += '<th>' + column_list[col_index] + '</th>';
         insert_html += '\
                                     </tr>\
                                 </thead>\
                                 <tbody>';
-        var row_content = result_content.row_content;
+        var row_content = table_content.row_content;
         for (var row_index = 0; row_index < row_content.length; ++row_index)
         {
             insert_html += '<tr>';
@@ -171,15 +188,15 @@ function querySuccess(response)
                             </table>\
                         </div> <!-- table-->';
 
-        var is_begin = result_content.is_begin;
-        var is_end = result_content.is_end;
+        var is_begin = table_content.is_begin;
+        var is_end = table_content.is_end;
         if (is_end == 0 || is_begin == 0)
         {
             insert_html += '\
                         <nav>\
                             <ul class="pager">'
                 
-            var query_id = result_content.query_id;
+            var query_id = table_content.query_id;
             if (is_begin == 0)
                 insert_html += '\
                                  <li class="previous"><a role="button" onclick="loadingNewPage(' + tab_index + ', ' + query_id + ', 0); return false" ><span>&larr;</span> Previous </a></li>';

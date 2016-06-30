@@ -19,6 +19,47 @@ class TableResult(object):
 
     def asDict(self):
         return {'column_list': self.column_list, 'row_content': self.row_content, 'is_begin': self.is_begin, 'is_end': self.is_end, 'query_id': self.query_id}
+    
+    def asReturnResult(self):
+        return {'table': self.asDict()}
+
+class GraphResult(object):
+    def __init__(self, graph_operator, graph_type, graph_name):
+        self.setGraphOperator(graph_operator)
+        self.setGraphType(graph_type)
+        self.setGraphName(graph_name)
+
+    def setGraphType(self, graph_type):
+        if graph_type not in ['digraph', 'ungraph']:
+            raise TypeError('graph type must be digraph or ungraph') 
+        self.graph_type = graph_type
+
+    def setGraphOperator(self, graph_operator):
+        if graph_operator not in ['rank', 'cluster', 'path']:
+            raise TypeError('graph operator must be rank, cluster or path') 
+        self.graph_operator = graph_operator
+    
+    def setGraphName(self, graph_name):
+        self.graph_name = graph_name
+
+    def readGraphFile(self):
+        matGraphFile = os.environ['HOME'] + "/RG_Mat_Graph/" + self.graph_name
+        with open(matGraphFile) as f:
+            pass
+
+    def asDict(self):
+        return {'name': self.graph_name, 'operator': self.graph_operator, 'graph_type': self.graph_type}
+    
+    def asReturnResult(self):
+        return {'graph': self.asDict()}
+
+class TableGraphResult(object):
+    def __init__(self, table_result, graph_result):
+        self.table_result = table_result
+        self.graph_result = graph_result
+    
+    def asReturnResult(self):
+        return {'table': self.table_result.asDict(), 'graph': self.graph_result.asDict()}
 
 class QueryResult(object):
     def __init__(self, result_type='string', result_content='None'):
@@ -34,8 +75,8 @@ class QueryResult(object):
     def setContent(self, result_content):
         self.result_content = result_content
     
-    def asDict(self):
-        content_val = self.result_content if self.result_type == 'string' else self.result_content.asDict()
+    def asReturnResult(self):
+        content_val = self.result_content if self.result_type == 'string' else self.result_content.asReturnResult()
         return {'type': self.result_type, 'content': content_val}
 
 class ResultManager(object):

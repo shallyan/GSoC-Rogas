@@ -19,7 +19,7 @@ class QueryHandler(BaseHandler):
         tab_index = self.get_argument('tab_index')
 
         queryResult = queryConsole.start(query)
-        actResult = {'tab_index': tab_index, 'result': queryResult.asDict()}
+        actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
         self.write(actResult)
 
 class LoadResultHandler(BaseHandler):
@@ -29,5 +29,5 @@ class LoadResultHandler(BaseHandler):
         tab_index = self.get_argument('tab_index')
 
         queryResult = queryConsole.fetch(query_id, is_next)
-        actResult = {'tab_index': tab_index, 'result': queryResult.asDict()}
+        actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
         self.write(actResult)

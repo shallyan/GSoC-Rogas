@@ -8,8 +8,7 @@ import queryParser
 import matGraphProcessor
 import time
 import os
-from resultManager import QueryResult
-from resultManager import SingleResultManager
+from resultManager import QueryResult, GraphResult, TableResult, TableGraphResult, SingleResultManager
 import config
 
 #starts to execute the input query
@@ -21,13 +20,16 @@ def execQuery(conn, cur, executeCommand):
     if ("rank" in lowerCaseCommand) or ("cluster" in lowerCaseCommand)or ("path" in lowerCaseCommand):
         startTime = time.time()
         
-        newExecuteCommand = queryParser.queryAnalyse(executeCommand, conn, cur)
+        newExecuteCommand, graphOperationInfo = queryParser.queryAnalyse(executeCommand, conn, cur)
         #newExecuteCommand = graphProcessor.queryAnalyse(executeCommand, conn, cur)
         #print "Total operation time is: ", (time.time() - startTime)
         #print newExecuteCommand  #for debug
         cur.execute(newExecuteCommand[:]) #remove the first space
+
         queryResult.setType("table_graph")
-        queryResult.setContent(SingleResultManager.extractTableResultFromCursor(cur))
+        tableResult = SingleResultManager.extractTableResultFromCursor(cur)
+        graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2]) 
+        queryResult.setContent(TableGraphResult(tableResult, graphResult))
     
     #query about creating or dropping a materialised graph    
     elif ("create" in lowerCaseCommand or "drop" in lowerCaseCommand) and ("ungraph" in lowerCaseCommand or "digraph" in lowerCaseCommand):

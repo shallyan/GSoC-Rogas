@@ -21,6 +21,10 @@ def queryAnalyse(executeCommand, conn, cur):
     commandList = executeCommand.split()
     commandList.reverse()  #so that inner sub-queries can be executed first
     
+    #keep all the rank/cluster/path operator, but now only the most outside one is used
+    #tuple: (graph_operator, graph_type, graph_name)
+    graphOperationList = [] 
+
     #the operatorID corresponds to the order that graph operators occur in the query
     operatorID = 0
     
@@ -36,6 +40,9 @@ def queryAnalyse(executeCommand, conn, cur):
             graphIndex = lowerCaseCommand.rindex("rank",0, indexMark)
             indexMark = graphIndex
             rankCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
+
+            #tuple: (graph_operator, graph_type, graph_name)
+            graphOperationList.append(('rank', rankCommands[2], rankCommands[0]))
             
             graphQuery = getGQuery(executeCommand, graphIndex, rankCommands[-1])
             #print "graphQuery ", graphQuery  #for debug
@@ -59,6 +66,9 @@ def queryAnalyse(executeCommand, conn, cur):
             graphIndex = lowerCaseCommand.rindex("cluster",0, indexMark)
             indexMark = graphIndex
             clusterCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
+
+            #tuple: (graph_operator, graph_type, graph_name)
+            graphOperationList.append(('cluster', clusterCommands[2], clusterCommands[0]))
             
             graphQuery = getGQuery(executeCommand, graphIndex, clusterCommands[-1])
             #print "graphQuery ", graphQuery  #for debug
@@ -82,6 +92,9 @@ def queryAnalyse(executeCommand, conn, cur):
             graphIndex = lowerCaseCommand.rindex("path",0, indexMark)
             indexMark = graphIndex + 4
             pathCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
+
+            #tuple: (graph_operator, graph_type, graph_name)
+            graphOperationList.append(('path', pathCommands[2], pathCommands[0]))
             
             graphQuery = getGQuery(executeCommand, graphIndex, pathCommands[-1])
             #print "graphQuery ", graphQuery  #for debug
@@ -97,7 +110,11 @@ def queryAnalyse(executeCommand, conn, cur):
     #rewrite the query
     for eachStr in graphQueryAndResult.keys():
         executeCommand = executeCommand.replace(eachStr,graphQueryAndResult.get(eachStr))
-    return executeCommand
+
+    #get the most outside graph operator
+    outside_graph_info = graphOperationList[-1]
+    
+    return executeCommand, outside_graph_info
     
 
 #use a list to store graph info like src, des, type of graphs, measurements/algorithms used in the operation, the related table name
