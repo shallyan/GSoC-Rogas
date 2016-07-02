@@ -186,7 +186,10 @@ function querySuccess(response)
         var row_content = table_content.row_content;
         for (var row_index = 0; row_index < row_content.length; ++row_index)
         {
-            insert_html += '<tr>';
+            if (row_index % 2 == 0)
+                insert_html += '<tr>';
+            else
+                insert_html += '<tr class="info">';
             for (var col_index = 0; col_index < row_content[row_index].length; ++col_index)
                 insert_html += '<td>' + row_content[row_index][col_index] + '</td>';
             insert_html += '<tr>';
