@@ -71,7 +71,7 @@ def start(query):
         queryResult = execQuery(SingleConnection, cur, query)
         #print "Total query time is: ", (time.time() - start_time)
         os.system("rm -fr /dev/shm/RG_Tmp_Graph/*")  #clear graphs on-the-fly
-    except psycopg2.ProgrammingError as reason:
+    except Exception as reason:
         queryResult.setType("string")
         queryResult.setContent(str(reason))
 
