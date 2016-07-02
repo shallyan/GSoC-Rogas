@@ -28,7 +28,8 @@ def execQuery(conn, cur, executeCommand):
 
         queryResult.setType("table_graph")
         tableResult = SingleResultManager.extractTableResultFromCursor(cur)
-        graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2]) 
+        graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2], graphOperationInfo[3]) 
+        graphResult.generateGraph()
         queryResult.setContent(TableGraphResult(tableResult, graphResult))
     
     #query about creating or dropping a materialised graph    
@@ -75,6 +76,14 @@ def start(query):
         queryResult.setType("string")
         queryResult.setContent(str(reason))
 
+    needKeepCursor = False
+    if queryResult.result_type == "table":
+        needKeepCursor = (queryResult.result_content.is_end == 0)
+    elif queryResult.result_type == "table_graph":
+        needKeepCursor = (queryResult.result_content.table_result.is_end == 0)
+    if needKeepCursor == False:
+        cur.close()
+
     SingleConnection.rollback()
 
     return queryResult
@@ -86,3 +95,13 @@ def fetch(query_id, is_next):
     queryResult.setContent(SingleResultManager.extractTableResultById(query_id, is_next))
 
     return queryResult
+
+def readTable(table_name):
+    cur = SingleConnection.cursor()
+    cur.execute('select * from ' + table_name + ';') 
+    tableResult = SingleResultManager.extractTableResultFromCursor(cur, is_all=True)
+    cur.close()
+
+    SingleConnection.commit() 
+    SingleConnection.rollback()
+    return tableResult

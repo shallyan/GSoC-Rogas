@@ -5,6 +5,8 @@ The resultManager is to manage the query results
 '''
 
 import config
+import queryConsole
+import os
 
 class TableResult(object):
     def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, query_id=0):
@@ -18,16 +20,19 @@ class TableResult(object):
         self.query_id = query_id
 
     def asDict(self):
-        return {'column_list': self.column_list, 'row_content': self.row_content, 'is_begin': self.is_begin, 'is_end': self.is_end, 'query_id': self.query_id}
+        return {'column_list': self.column_list, 'row_content': self.row_content,
+                'is_begin': self.is_begin, 'is_end': self.is_end, 
+                'query_id': self.query_id}
     
     def asReturnResult(self):
         return {'table': self.asDict()}
 
 class GraphResult(object):
-    def __init__(self, graph_operator, graph_type, graph_name):
+    def __init__(self, graph_operator, graph_type, graph_name, graph_op_result_name):
         self.setGraphOperator(graph_operator)
         self.setGraphType(graph_type)
         self.setGraphName(graph_name)
+        self.setGraphOpResultName(graph_op_result_name)
 
     def setGraphType(self, graph_type):
         if graph_type not in ['digraph', 'ungraph']:
@@ -42,13 +47,38 @@ class GraphResult(object):
     def setGraphName(self, graph_name):
         self.graph_name = graph_name
 
-    def readGraphFile(self):
+    def setGraphOpResultName(self, graph_op_result_name):
+        self.graph_op_result_name = graph_op_result_name 
+
+    def generateGraph(self):
+        #read result
+        self.graph_nodes = []
+        tableResult = queryConsole.readTable(self.graph_op_result_name)
+        if self.graph_operator == 'rank':
+            for row in tableResult.row_content:
+                node = {'id': str(row[0].strip()), 'value': str(row[1].strip())}
+                self.graph_nodes.append(node)
+
+        #keep max and min 20 nodes
+        if len(self.graph_nodes) > 20:
+            self.graph_nodes = self.graph_nodes[:10] + self.graph_nodes[-10:]
+
+        all_nodes_id_set = set([node['id'] for node in self.graph_nodes])
+
+        #read graph from file
+        self.graph_edges = []
         matGraphFile = os.environ['HOME'] + "/RG_Mat_Graph/" + self.graph_name
         with open(matGraphFile) as f:
-            pass
+            for line in f:
+                edge_nodes = line.strip().split()
+                edge = {'source': str(edge_nodes[0].strip()), 'target': str(edge_nodes[1].strip())}
+                if edge['source'] in all_nodes_id_set and edge['target'] in all_nodes_id_set:
+                    self.graph_edges.append(edge)
 
     def asDict(self):
-        return {'name': self.graph_name, 'operator': self.graph_operator, 'graph_type': self.graph_type}
+        return {'name': self.graph_name, 'operator': self.graph_operator, 
+                'graph_type': self.graph_type, 'nodes': self.graph_nodes,
+                'edges': self.graph_edges}
     
     def asReturnResult(self):
         return {'graph': self.asDict()}
@@ -84,7 +114,7 @@ class ResultManager(object):
         self.current_id = 0
         self.cursor_dict = {}
 
-    def _extractTableResult(self, cursor, is_next, max_number):
+    def _extractTableResult(self, cursor, is_next, max_number, is_all=False):
         start_index = cursor.rownumber 
         #previous page
         if is_next == 0:
@@ -102,7 +132,7 @@ class ResultManager(object):
         rows_content = []
 
         cursor.scroll(start_index, mode='absolute')
-        rows = cursor.fetchmany(max_number)
+        rows = cursor.fetchall() if is_all else cursor.fetchmany(max_number)
         for each_row in rows:
             one_row_content = [str(each_col) for each_col in each_row]
             rows_content.append(one_row_content)
@@ -112,8 +142,8 @@ class ResultManager(object):
 
         return is_end, TableResult(column_list, rows_content, is_begin, is_end)
 
-    def extractTableResultFromCursor(self, cursor):
-        is_end, table_result = self._extractTableResult(cursor, 0, config.PAGE_MAX_NUM)
+    def extractTableResultFromCursor(self, cursor, is_all=False):
+        is_end, table_result = self._extractTableResult(cursor, 0, config.PAGE_MAX_NUM, is_all)
         
         if is_end == 0:
             table_result.setQueryId(self.current_id)

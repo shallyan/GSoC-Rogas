@@ -22,7 +22,7 @@ def queryAnalyse(executeCommand, conn, cur):
     commandList.reverse()  #so that inner sub-queries can be executed first
     
     #keep all the rank/cluster/path operator, but now only the most outside one is used
-    #tuple: (graph_operator, graph_type, graph_name)
+    #tuple: (graph_operator, graph_type, graph_name, result_table_name)
     graphOperationList = [] 
 
     #the operatorID corresponds to the order that graph operators occur in the query
@@ -41,9 +41,6 @@ def queryAnalyse(executeCommand, conn, cur):
             indexMark = graphIndex
             rankCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
 
-            #tuple: (graph_operator, graph_type, graph_name)
-            graphOperationList.append(('rank', rankCommands[2], rankCommands[0]))
-            
             graphQuery = getGQuery(executeCommand, graphIndex, rankCommands[-1])
             #print "graphQuery ", graphQuery  #for debug
             
@@ -54,6 +51,10 @@ def queryAnalyse(executeCommand, conn, cur):
                 rExe.processCommand(rankCommands, conn, cur)
                 graphQueryAndResult[graphQuery] = resultTableName
             #print "rankCommands ", rankCommands  #for debug
+
+            #tuple: (graph_operator, graph_type, graph_name, result_table_name)
+            graphOperationList.append(('rank', rankCommands[2], rankCommands[0], graphQueryAndResult[graphQuery]))
+            
         
         if each.lower().startswith("cluster("):
             operatorID += 1
@@ -67,9 +68,6 @@ def queryAnalyse(executeCommand, conn, cur):
             indexMark = graphIndex
             clusterCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
 
-            #tuple: (graph_operator, graph_type, graph_name)
-            graphOperationList.append(('cluster', clusterCommands[2], clusterCommands[0]))
-            
             graphQuery = getGQuery(executeCommand, graphIndex, clusterCommands[-1])
             #print "graphQuery ", graphQuery  #for debug
             
@@ -80,6 +78,10 @@ def queryAnalyse(executeCommand, conn, cur):
                 cExe.processCommand(clusterCommands, conn, cur)
                 graphQueryAndResult[graphQuery] = resultTableName
             #print "clusterCommands ", clusterCommands  #for debug
+
+            #tuple: (graph_operator, graph_type, graph_name, result_table_name)
+            graphOperationList.append(('cluster', clusterCommands[2], clusterCommands[0], graphQueryAndResult[graphQuery]))
+            
         
         if each.lower().startswith("path("):
             operatorID += 1
@@ -93,9 +95,6 @@ def queryAnalyse(executeCommand, conn, cur):
             indexMark = graphIndex + 4
             pathCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
 
-            #tuple: (graph_operator, graph_type, graph_name)
-            graphOperationList.append(('path', pathCommands[2], pathCommands[0]))
-            
             graphQuery = getGQuery(executeCommand, graphIndex, pathCommands[-1])
             #print "graphQuery ", graphQuery  #for debug
             
@@ -106,6 +105,10 @@ def queryAnalyse(executeCommand, conn, cur):
                 pExe.processCommand(pathCommands, conn, cur)
                 graphQueryAndResult[graphQuery] = resultTableName
             #print "pathCommands ", pathCommands  #for debug
+
+            #tuple: (graph_operator, graph_type, graph_name, result_table_name)
+            graphOperationList.append(('path', pathCommands[2], pathCommands[0], graphQueryAndResult[graphQuery]))
+            
             
     #rewrite the query
     for eachStr in graphQueryAndResult.keys():
