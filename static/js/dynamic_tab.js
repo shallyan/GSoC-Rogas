@@ -115,7 +115,7 @@ function querySuccess(response)
         //relation tab
         insert_html = '\
             <!-- result tab: Relations/Graphs -->\
-            <div class="panel panel-info" style="display: none" id="rg_result' + tab_index + '">\
+            <div class="panel panel-info" id="rg_result' + tab_index + '">\
                 <div class="panel-heading">\
                     <ul id="result_tab" class="nav nav-pills">\
                         <li class="active">\
@@ -207,6 +207,8 @@ function querySuccess(response)
     }
 
     $('#query_form' + tab_index).after(insert_html);
+
+    $('#rg_result' + tab_index).hide();
     $('#rg_result' + tab_index).fadeIn();
 
     if (result_type == "table_graph")
@@ -391,5 +393,7 @@ function queryNewPageSuccess(response)
 
     $('#table_head' + tab_index).after(table_body_html);
     $('#div_table' + tab_index).after(pager_html);
-    $('#rg_result' + tab_index).fadeIn();
+
+    $('#table_body' + tab_index).hide();
+    $('#table_body' + tab_index).fadeIn();
 }
