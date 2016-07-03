@@ -15,19 +15,31 @@ class MainHandler(BaseHandler):
 
 class QueryHandler(BaseHandler):
     def post(self):
-        query = self.get_argument('query')
-        tab_index = self.get_argument('tab_index')
+        actResult = dict() 
+        try:
+            query = self.get_argument('query')
+            tab_index = self.get_argument('tab_index')
 
-        queryResult = queryConsole.start(query)
-        actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
+            queryResult = queryConsole.start(query)
+            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
+        except Exception as reason: 
+            actResult['tab_index'] = 0
+            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+            
         self.write(actResult)
 
 class LoadResultHandler(BaseHandler):
     def post(self):
-        query_id = int(self.get_argument('query_id'))
-        is_next = int(self.get_argument('is_next'))
-        tab_index = self.get_argument('tab_index')
+        actResult = dict() 
+        try:
+            query_id = int(self.get_argument('query_id'))
+            is_next = int(self.get_argument('is_next'))
+            tab_index = self.get_argument('tab_index')
 
-        queryResult = queryConsole.fetch(query_id, is_next)
-        actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
+            queryResult = queryConsole.fetch(query_id, is_next)
+            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
+        except Exception as reason: 
+            actResult['tab_index'] = 0
+            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+
         self.write(actResult)
