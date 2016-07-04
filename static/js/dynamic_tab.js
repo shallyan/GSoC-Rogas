@@ -268,7 +268,7 @@ function drawGraph(tab_index, graph_content)
                 
         var linear_scale = d3.scale.linear()
                              .domain([0, 1])
-                             .range([5, 100]);
+                             .range([5, 200]);
 
         var svg_nodes = svg.selectAll("circle")
                             .data(graph_nodes)
@@ -287,10 +287,10 @@ function drawGraph(tab_index, graph_content)
                             .enter()
                             .append("text")
                             .style("fill", "black")
-                            .attr("dx", 20)
+                            .attr("dx", 10)
                             .attr("dy", 5)
                             .text(function(d){
-                                return d.value;
+                                return d.id;
                             });
 
         force.on("tick", function(){
