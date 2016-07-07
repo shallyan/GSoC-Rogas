@@ -49,31 +49,50 @@ class GraphResult(object):
 
     def setGraphOpResultName(self, graph_op_result_name):
         self.graph_op_result_name = graph_op_result_name 
-
-    def generateGraph(self):
-        #read result
+    
+    def _generateRankGraphNodes(self, row_content):
         self.graph_nodes = []
-        tableResult = queryConsole.readTable(self.graph_op_result_name)
-        if self.graph_operator == 'rank':
-            for row in tableResult.row_content:
-                node = {'id': str(row[0].strip()), 'value': str(row[1].strip())}
-                self.graph_nodes.append(node)
 
-        #keep max and min 20 nodes
-        if len(self.graph_nodes) > 20:
-            self.graph_nodes = self.graph_nodes[:10] + self.graph_nodes[-10:]
+        for row in row_content:
+            node = {'id': str(row[0].strip()), 'value': str(row[1].strip())}
+            self.graph_nodes.append(node)
 
-        all_nodes_id_set = set([node['id'] for node in self.graph_nodes])
+        #keep max and min nodes
+        max_num = config.RANK_NODE_MAX_NUM
+        if len(self.graph_nodes) > max_num:
+            self.graph_nodes = self.graph_nodes[:max_num/2] + self.graph_nodes[-max_num/2:]
 
-        #read graph from file
+    def _generateGraphEdges(self, matGraphFile): 
         self.graph_edges = []
-        matGraphFile = os.environ['HOME'] + "/RG_Mat_Graph/" + self.graph_name
+
         with open(matGraphFile) as f:
             for line in f:
                 edge_nodes = line.strip().split()
                 edge = {'source': str(edge_nodes[0].strip()), 'target': str(edge_nodes[1].strip())}
-                if edge['source'] in all_nodes_id_set and edge['target'] in all_nodes_id_set:
-                    self.graph_edges.append(edge)
+                self.graph_edges.append(edge)
+
+    def _filterEdgesByNodes(self):
+        all_nodes_id_set = set([node['id'] for node in self.graph_nodes])
+        new_graph_edges = []
+
+        for edge in self.graph_edges:
+            if edge['source'] in all_nodes_id_set and edge['target'] in all_nodes_id_set:
+                new_graph_edges.append(edge)
+
+        self.graph_edges = new_graph_edges
+
+    def generateGraph(self):
+        #read graph edges from file
+        matGraphFile = os.environ['HOME'] + "/RG_Mat_Graph/" + self.graph_name
+        self._generateGraphEdges(matGraphFile)
+
+        #read graph nodes 
+        tableResult = queryConsole.readTable(self.graph_op_result_name)
+        if self.graph_operator == 'rank':
+            self._generateRankGraphNodes(tableResult.row_content)
+
+        #filter edges by nodes
+        self._filterEdgesByNodes()
 
     def asDict(self):
         return {'name': self.graph_name, 'operator': self.graph_operator, 
