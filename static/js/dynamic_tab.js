@@ -142,34 +142,9 @@ function querySuccess(response)
 
         if (result_type == "table_graph")
         {
-            var graph_content = result_content.graph;
-            var graph_name = graph_content.name;
-            var graph_operator = graph_content.operator;
-            var graph_type = graph_content.graph_type;
-
-            if (graph_operator == "rank")
-            {
-                insert_html += '\
-                    <div class="tab-pane fade" id="graph' + tab_index + '"> \
-                    </div>';
-            }
-            else {
-                insert_html += '\
-                    <div class="tab-pane fade" id="graph' + tab_index + '"> \
-                        <div>\
-                            <span>Here are graphs!</span>\
-                        </div>\
-                        <div>\
-                            <span>GraphName: ' + graph_name + '</span>\
-                        </div>\
-                        <div>\
-                            <span>GraphType: ' + graph_type + '</span>\
-                        </div>\
-                        <div>\
-                            <span>GraphOperator: ' + graph_operator + '</span>\
-                        </div>\
-                    </div>';
-            }
+            insert_html += '\
+                <div class="tab-pane fade" id="graph' + tab_index + '"> \
+                </div>';
         }
         insert_html += '\
                     <div class="tab-pane fade in active" id="relation' + tab_index + '">\

@@ -53,8 +53,8 @@ class GraphResult(object):
     def _generateRankGraphNodes(self, row_content):
         self.graph_nodes = []
 
-        for row in row_content:
-            node = {'id': str(row[0].strip()), 'value': str(row[1].strip())}
+        for index, row in enumerate(row_content):
+            node = {'id': str(row[0].strip()), 'size': float(row[1].strip()),'color': index}
             self.graph_nodes.append(node)
 
         #keep max and min nodes
@@ -62,13 +62,28 @@ class GraphResult(object):
         if len(self.graph_nodes) > max_num:
             self.graph_nodes = self.graph_nodes[:max_num/2] + self.graph_nodes[-max_num/2:]
 
+    def _generateClusterGraphNodes(self, row_content):
+        self._generateGraphNodes()
+
+    def _generatePathGraphNodes(self, row_content):
+        self._generateGraphNodes()
+
+    def _generateGraphNodes(self):
+        #To do
+        self.graph_nodes = []
+        node1 = {'id': '1', 'size': 0.5 ,'color': 0}
+        node2 = {'id': '2', 'size': 0.5 ,'color': 0}
+        self.graph_nodes.append(node1)
+        self.graph_nodes.append(node2)
+
     def _generateGraphEdges(self, matGraphFile): 
         self.graph_edges = []
 
         with open(matGraphFile) as f:
             for line in f:
                 edge_nodes = line.strip().split()
-                edge = {'source': str(edge_nodes[0].strip()), 'target': str(edge_nodes[1].strip())}
+                edge = {'source': str(edge_nodes[0].strip()), 'target': str(edge_nodes[1].strip()),
+                        'length': 100, 'width': 1, 'color': 1}
                 self.graph_edges.append(edge)
 
     def _filterEdgesByNodes(self):
@@ -90,6 +105,12 @@ class GraphResult(object):
         tableResult = queryConsole.readTable(self.graph_op_result_name)
         if self.graph_operator == 'rank':
             self._generateRankGraphNodes(tableResult.row_content)
+        elif self.graph_operator == 'cluster':
+            self._generateClusterGraphNodes(tableResult.row_content)
+        elif self.graph_operator == 'path':
+            self._generatePathGraphNodes(tableResult.row_content)
+        else:
+            self._generateGraphNodes()
 
         #filter edges by nodes
         self._filterEdgesByNodes()

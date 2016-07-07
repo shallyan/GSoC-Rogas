@@ -1,11 +1,8 @@
 function drawGraph(tab_index, graph_content)
 {
-    var graph_operator = graph_content.operator;
     var graph_type = graph_content.graph_type;
     var graph_nodes = graph_content.nodes;
     var graph_edges = graph_content.edges;
-
-    if (graph_operator == "rank"){ 
 
     var height = 400;
     var width = $("#rg_result" + tab_index).width();
@@ -29,33 +26,40 @@ function drawGraph(tab_index, graph_content)
                   .nodes(graph_nodes)
                   .size([width, height])
                   .links(graph_edges)	
-                  .linkDistance(50)
-                  .charge(-400);	
+                  .charge(-400)	
+                  .linkDistance(function(edge){
+                      return edge.length;
+                  });
 
     force.start();	
+
+    var color_scale = d3.scale.category20();
 
     var svg_edges = svg.selectAll("line")
                         .data(graph_edges)
                         .enter()
                         .append("line")
-                        .style("stroke","#ccc")
-                        .style("stroke-width",1);
+                        .style("stroke", function(edge){
+                            return color_scale(edge.color % 20);
+                        })
+                        .style("stroke-width",function(edge){
+                            return edge.width;
+                        });
     
-    var color = d3.scale.category20();
             
     var linear_scale = d3.scale.linear()
                          .domain([0, 1])
-                         .range([5, 200]);
+                         .range([5, 50]);
 
     var svg_nodes = svg.selectAll("circle")
                         .data(graph_nodes)
                         .enter()
                         .append("circle")
-                        .attr("r",function(d){
-                            return linear_scale(d.value);
+                        .attr("r",function(node){
+                            return linear_scale(node.size);
                         })
-                        .style("fill",function(d,i){
-                            return color(i);
+                        .style("fill",function(node){
+                            return color_scale(node.color % 20);
                         })
                         .call(force.drag);
 
@@ -66,22 +70,21 @@ function drawGraph(tab_index, graph_content)
                         .style("fill", "black")
                         .attr("dx", 10)
                         .attr("dy", 5)
-                        .text(function(d){
-                            return d.id;
+                        .text(function(node){
+                            return node.id;
                         });
 
     force.on("tick", function(){
-         svg_edges.attr("x1",function(d){ return d.source.x; })
-                  .attr("y1",function(d){ return d.source.y; })
-                  .attr("x2",function(d){ return d.target.x; })
-                  .attr("y2",function(d){ return d.target.y; });
+         svg_edges.attr("x1",function(edge){ return edge.source.x; })
+                  .attr("y1",function(edge){ return edge.source.y; })
+                  .attr("x2",function(edge){ return edge.target.x; })
+                  .attr("y2",function(edge){ return edge.target.y; });
          
-         svg_nodes.attr("cx",function(d){ return d.x; })
-                  .attr("cy",function(d){ return d.y; });
+         svg_nodes.attr("cx",function(node){ return node.x; })
+                  .attr("cy",function(node){ return node.y; });
 
-         svg_texts.attr("x", function(d){ return d.x; })
-                  .attr("y", function(d){ return d.y; });
+         svg_texts.attr("x", function(text){ return text.x; })
+                  .attr("y", function(text){ return text.y; });
     });
-    }
 }
 
