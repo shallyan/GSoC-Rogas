@@ -7,6 +7,7 @@ The resultManager is to manage the query results
 import config
 import queryConsole
 import os
+import random
 
 class TableResult(object):
     def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, query_id=0):
@@ -53,6 +54,7 @@ class GraphResult(object):
     def _generateRankGraphNodes(self, row_content):
         self.graph_nodes = []
 
+        #VertexId, Value
         for index, row in enumerate(row_content):
             node = {'id': str(row[0].strip()), 'size': float(row[1].strip()),'color': index}
             self.graph_nodes.append(node)
@@ -63,7 +65,81 @@ class GraphResult(object):
             self.graph_nodes = self.graph_nodes[:max_num/2] + self.graph_nodes[-max_num/2:]
 
     def _generateClusterGraphNodes(self, row_content):
-        self._generateGraphNodes()
+        self.graph_nodes = []
+        cluster_id2size = dict()
+        cluster_id2nodes = dict()
+        node_id2cluster_id = dict()
+        node_id2score = dict()
+        node_id_cluster_id2score_reatio = dict()
+        all_nodes_num = 0
+
+        #ClusterId, Size, Members
+        for row in row_content:
+            cluster_id = str(row[0].strip())
+            cluster_size = float(row[1].strip())
+            cluster_members = str(row[2].strip())
+            node_ids = [node_id.strip() for node_id in cluster_members[1:-1].split(',')]
+            all_nodes_num += cluster_size
+            
+            cluster_id2size[cluster_id] = cluster_size
+            cluster_id2nodes[cluster_id] = node_ids
+            for node_id in node_ids:
+                node_id2cluster_id[node_id] = cluster_id 
+                node_id2score[node_id] = 0
+                if node_id not in node_id_cluster_id2score_reatio:
+                    node_id_cluster_id2score_reatio[node_id] = dict()
+
+        for node_id in node_id_cluster_id2score_reatio:
+            for cluster_id in cluster_id2size:
+                node_id_cluster_id2score_reatio[node_id][cluster_id] = 2.0
+        
+        need_scale_size = all_nodes_num > config.CLUSTER_NODE_MAX_NUM
+
+        for edge in self.graph_edges:
+            start_node = edge['source']
+            end_node = edge['target']
+            #two node in the same cluster
+            source_cluster_id = node_id2cluster_id[start_node]
+            target_cluster_id = node_id2cluster_id[end_node]
+
+            #score each node if needed
+            if source_cluster_id == target_cluster_id:
+                if need_scale_size:
+                    node_id2score[start_node] += 1.0
+                    node_id2score[end_node] += 1.0
+            else:
+                edge['length'] = 400 + random.random()*100
+                if need_scale_size:
+                    node_id2score[start_node] += node_id_cluster_id2score_reatio[start_node][target_cluster_id]
+                    node_id_cluster_id2score_reatio[start_node][target_cluster_id] *= 0.8
+
+                    node_id2score[end_node] += node_id_cluster_id2score_reatio[end_node][source_cluster_id]
+                    node_id_cluster_id2score_reatio[end_node][source_cluster_id] *= 0.8
+
+
+        if need_scale_size:
+            #calculate the size of each cluster
+            for cluster_id, cluster_size in cluster_id2size.items():
+                cluster_id2size[cluster_id] = max(cluster_size * config.CLUSTER_NODE_MAX_NUM * 1.0 / all_nodes_num, 5)
+
+            #keep high score nodes
+            for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
+                score_node_id_pair_lst = [(node_id2score[node_id], node_id) for node_id in cluster_nodes]
+                #sort node by score
+                sorted_score_node_id_pair_lst = sorted(score_node_id_pair_lst)
+                #get nodes
+                max_nodes_num = min(len(score_node_id_pair_lst), cluster_id2size[cluster_id])
+                for i in range(int(max_nodes_num)):
+                    node_id = sorted_score_node_id_pair_lst[i][1]
+                    node = {'id': node_id, 'size': 0.1, 'color': cluster_id}
+                    self.graph_nodes.append(node)
+
+        else:
+            #keep all nodes 
+            for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
+                for node_id in cluster_nodes:
+                    node = {'id': node_id, 'size': 0.05, 'color': cluster_id}
+                    self.graph_nodes.append(node)
 
     def _generatePathGraphNodes(self, row_content):
         self._generateGraphNodes()
