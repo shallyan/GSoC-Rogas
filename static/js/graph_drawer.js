@@ -58,9 +58,9 @@ function drawGraph(tab_index, graph_content)
            .attr("refX", 10)
            .attr("refY", 6)
            .attr("orient", "auto")
+           .style("fill", color_scale(0))
            .append("path")
-           .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
-           .style("stroke",color_scale(0));
+           .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2");
     }
 
     var g = svg.append("g");
