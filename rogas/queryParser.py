@@ -46,7 +46,7 @@ def queryAnalyse(executeCommand, conn, cur):
             
             #not run the same graph operation again
             if graphQuery not in graphQueryAndResult:
-                resultTableName = "rank_" + rankCommands[0] + str(operatorID)
+                resultTableName = "rank_" + rankCommands[0] + rankCommands[1] + str(operatorID)
                 rankCommands.append(resultTableName) #the last element is the result table name
                 rExe.processCommand(rankCommands, conn, cur)
                 graphQueryAndResult[graphQuery] = resultTableName
@@ -73,7 +73,7 @@ def queryAnalyse(executeCommand, conn, cur):
             
             #not run the same graph command again
             if graphQuery not in graphQueryAndResult:
-                resultTableName = "cluster_" + clusterCommands[0] + str(operatorID) #the last element is tableName
+                resultTableName = "cluster_" + clusterCommands[0] + clusterCommands[1] + str(operatorID) #the last element is tableName
                 clusterCommands.append(resultTableName)
                 cExe.processCommand(clusterCommands, conn, cur)
                 graphQueryAndResult[graphQuery] = resultTableName
@@ -100,7 +100,8 @@ def queryAnalyse(executeCommand, conn, cur):
             
             #not run the same graph command again
             if graphQuery not in graphQueryAndResult:
-                resultTableName = "path_" + pathCommands[0] + str(operatorID) #the last element is tableName
+                pathPara = str(hash(pathCommands[1]))[1:]
+                resultTableName = "path_" + pathCommands[0] + pathPara + str(operatorID) #the last element is tableName
                 pathCommands.append(resultTableName)
                 pExe.processCommand(pathCommands, conn, cur)
                 graphQueryAndResult[graphQuery] = resultTableName
