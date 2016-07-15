@@ -55,8 +55,8 @@ class GraphResult(object):
         self.graph_nodes = []
 
         #VertexId, Value
-        for index, row in enumerate(row_content):
-            node = {'id': str(row[0].strip()), 'size': float(row[1].strip()),'color': index}
+        for row in row_content:
+            node = {'id': str(row[0].strip()), 'size': float(row[1].strip()),'color': 0}
             self.graph_nodes.append(node)
 
         #keep max and min nodes
