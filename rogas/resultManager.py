@@ -182,7 +182,8 @@ class GraphResult(object):
         self._generateGraphEdges(matGraphFile)
 
         #read graph nodes 
-        tableResult = queryConsole.readTable(self.graph_op_result_name)
+        tableResult = queryConsole.readTable(self.graph_op_result_name, "")
+        #tableResult = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
         if self.graph_operator == 'rank':
             self._generateRankGraphNodes(tableResult.row_content)
         elif self.graph_operator == 'cluster':

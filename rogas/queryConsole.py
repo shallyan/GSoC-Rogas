@@ -96,9 +96,9 @@ def fetch(query_id, is_next):
 
     return queryResult
 
-def readTable(table_name):
+def readTable(table_name, condition):
     cur = SingleConnection.cursor()
-    cur.execute('select * from ' + table_name + ';') 
+    cur.execute('select * from ' + table_name + ' ' + condition + ';') 
     tableResult = SingleResultManager.extractTableResultFromCursor(cur, is_all=True)
     cur.close()
 

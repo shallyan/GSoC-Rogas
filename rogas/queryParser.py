@@ -120,7 +120,20 @@ def queryAnalyse(executeCommand, conn, cur):
     
     return executeCommand, outside_graph_info
     
-
+#word appears in the begin, end in string, or mid with spaces(\t\n\r\space) around 
+def findWordInString(word, sString):
+    searchBeginIndex = 0
+    searchEndIndex = len(sString)
+    while True:
+        wordIndex = sString.find(word, searchBeginIndex, searchEndIndex)
+        if wordIndex == -1:
+            return -1
+        
+        if (wordIndex > searchBeginIndex and not sString[wordIndex-1].isspace()) or (wordIndex + len(word) < searchEndIndex and not sString[wordIndex+len(word)].isspace()):
+            searchBeginIndex = wordIndex + len(word)
+        else:
+            return wordIndex
+           
 #use a list to store graph info like src, des, type of graphs, measurements/algorithms used in the operation, the related table name
 def getGQueryInfo(executeCommand, graphIndex, conn, cur):
     matGraphDir = os.environ['HOME'] + "/RG_Mat_Graph/"
@@ -203,16 +216,12 @@ def getGQueryInfo(executeCommand, graphIndex, conn, cur):
     lowerWhereClause = whereClause.lower()
     whereClauseCommands = lowerWhereClause.split()
     if whereClauseCommands[0] == 'order' or whereClauseCommands[0] == 'limit':
-        resultEndIndex = 0
-
         #end search if meet with "where clause"
-        searchEndIndex = len(lowerWhereClause)
-        whereIndex = lowerWhereClause.find('where') 
-        if whereIndex != -1 and whereIndex > 0 and whereIndex < searchEndIndex-1:
-            if lowerWhereClause[whereIndex-1].isspace() and lowerWhereClause[whereIndex+1].isspace():
-                searchEndIndex = whereIndex
+        whereIndex = findWordInString('where', lowerWhereClause)
+        searchEndIndex = whereIndex if whereIndex != -1 else len(lowerWhereClause)
 
         #end condition if meet with ")" or ";", and ")" is not matched in ORDER BY clause
+        resultEndIndex = searchEndIndex 
         leftBracketNum = 0
         for i in range(searchEndIndex):
             if lowerWhereClause[i] == '(':
@@ -227,7 +236,11 @@ def getGQueryInfo(executeCommand, graphIndex, conn, cur):
                 resultEndIndex = i
                 break
         
+        #if not contain "limit", don't use it 
         graphCondition = whereClause[0:resultEndIndex].strip()
+        if findWordInString('limit', graphCondition.lower()) == -1:
+            graphCondition = ""
+
     gQueryInfo.append(graphCondition)  
 
     return gQueryInfo
