@@ -22,7 +22,7 @@ def queryAnalyse(executeCommand, conn, cur):
     commandList.reverse()  #so that inner sub-queries can be executed first
     
     #keep all the rank/cluster/path operator, but now only the most outside one is used
-    #tuple: (graph_operator, graph_type, graph_name, result_table_name)
+    #tuple: (graph_operator, graph_type, graph_name, result_table_name, graph_op_condition)
     graphOperationList = [] 
 
     #the operatorID corresponds to the order that graph operators occur in the query
@@ -41,7 +41,7 @@ def queryAnalyse(executeCommand, conn, cur):
             indexMark = graphIndex
             rankCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
 
-            graphQuery = getGQuery(executeCommand, graphIndex, rankCommands[-1])
+            graphQuery = getGQuery(executeCommand, graphIndex, rankCommands[-2])
             #print "graphQuery ", graphQuery  #for debug
             
             #not run the same graph operation again
@@ -52,8 +52,8 @@ def queryAnalyse(executeCommand, conn, cur):
                 graphQueryAndResult[graphQuery] = resultTableName
             #print "rankCommands ", rankCommands  #for debug
 
-            #tuple: (graph_operator, graph_type, graph_name, result_table_name)
-            graphOperationList.append(('rank', rankCommands[2], rankCommands[0], graphQueryAndResult[graphQuery]))
+            #tuple: (graph_operator, graph_type, graph_name, result_table_name, graph_op_condition)
+            graphOperationList.append(('rank', rankCommands[2], rankCommands[0], graphQueryAndResult[graphQuery], rankCommands[4]))
             
         
         if each.lower().startswith("cluster("):
@@ -68,7 +68,7 @@ def queryAnalyse(executeCommand, conn, cur):
             indexMark = graphIndex
             clusterCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
 
-            graphQuery = getGQuery(executeCommand, graphIndex, clusterCommands[-1])
+            graphQuery = getGQuery(executeCommand, graphIndex, clusterCommands[-2])
             #print "graphQuery ", graphQuery  #for debug
             
             #not run the same graph command again
@@ -79,8 +79,8 @@ def queryAnalyse(executeCommand, conn, cur):
                 graphQueryAndResult[graphQuery] = resultTableName
             #print "clusterCommands ", clusterCommands  #for debug
 
-            #tuple: (graph_operator, graph_type, graph_name, result_table_name)
-            graphOperationList.append(('cluster', clusterCommands[2], clusterCommands[0], graphQueryAndResult[graphQuery]))
+            #tuple: (graph_operator, graph_type, graph_name, result_table_name, graph_op_condition)
+            graphOperationList.append(('cluster', clusterCommands[2], clusterCommands[0], graphQueryAndResult[graphQuery], clusterCommands[4]))
             
         
         if each.lower().startswith("path("):
@@ -95,7 +95,7 @@ def queryAnalyse(executeCommand, conn, cur):
             indexMark = graphIndex + 4
             pathCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
 
-            graphQuery = getGQuery(executeCommand, graphIndex, pathCommands[-1])
+            graphQuery = getGQuery(executeCommand, graphIndex, pathCommands[-2])
             #print "graphQuery ", graphQuery  #for debug
             
             #not run the same graph command again
@@ -107,8 +107,8 @@ def queryAnalyse(executeCommand, conn, cur):
                 graphQueryAndResult[graphQuery] = resultTableName
             #print "pathCommands ", pathCommands  #for debug
 
-            #tuple: (graph_operator, graph_type, graph_name, result_table_name)
-            graphOperationList.append(('path', pathCommands[2], pathCommands[0], graphQueryAndResult[graphQuery]))
+            #tuple: (graph_operator, graph_type, graph_name, result_table_name, graph_op_condition)
+            graphOperationList.append(('path', pathCommands[2], pathCommands[0], graphQueryAndResult[graphQuery], pathCommands[4]))
             
             
     #rewrite the query
@@ -198,6 +198,38 @@ def getGQueryInfo(executeCommand, graphIndex, conn, cur):
         else:
             raise RuntimeError, "No such graph!!"
         
+    #get limit and order condition
+    graphCondition = ""
+    lowerWhereClause = whereClause.lower()
+    whereClauseCommands = lowerWhereClause.split()
+    if whereClauseCommands[0] == 'order' or whereClauseCommands[0] == 'limit':
+        resultEndIndex = 0
+
+        #end search if meet with "where clause"
+        searchEndIndex = len(lowerWhereClause)
+        whereIndex = lowerWhereClause.find('where') 
+        if whereIndex != -1 and whereIndex > 0 and whereIndex < searchEndIndex-1:
+            if lowerWhereClause[whereIndex-1].isspace() and lowerWhereClause[whereIndex+1].isspace():
+                searchEndIndex = whereIndex
+
+        #end condition if meet with ")" or ";", and ")" is not matched in ORDER BY clause
+        leftBracketNum = 0
+        for i in range(searchEndIndex):
+            if lowerWhereClause[i] == '(':
+                leftBracketNum += 1
+            elif lowerWhereClause[i] == ')':
+                if leftBracketNum > 0:
+                    leftBracketNum -= 1
+                else:
+                    resultEndIndex = i
+                    break
+            elif lowerWhereClause[i] == ';':
+                resultEndIndex = i
+                break
+        
+        graphCondition = whereClause[0:resultEndIndex].strip()
+    gQueryInfo.append(graphCondition)  
+
     return gQueryInfo
         
     

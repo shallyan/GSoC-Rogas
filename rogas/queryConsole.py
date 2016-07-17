@@ -28,7 +28,7 @@ def execQuery(conn, cur, executeCommand):
 
         queryResult.setType("table_graph")
         tableResult = SingleResultManager.extractTableResultFromCursor(cur)
-        graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2], graphOperationInfo[3]) 
+        graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2], graphOperationInfo[3], graphOperationInfo[4]) 
         graphResult.generateGraph()
         queryResult.setContent(TableGraphResult(tableResult, graphResult))
     

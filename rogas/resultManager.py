@@ -29,11 +29,12 @@ class TableResult(object):
         return {'table': self.asDict()}
 
 class GraphResult(object):
-    def __init__(self, graph_operator, graph_type, graph_name, graph_op_result_name):
+    def __init__(self, graph_operator, graph_type, graph_name, graph_op_result_name, graph_condition):
         self.setGraphOperator(graph_operator)
         self.setGraphType(graph_type)
         self.setGraphName(graph_name)
         self.setGraphOpResultName(graph_op_result_name)
+        self.setGraphCondition(graph_condition)
 
     def setGraphType(self, graph_type):
         if graph_type not in ['digraph', 'ungraph']:
@@ -51,6 +52,9 @@ class GraphResult(object):
     def setGraphOpResultName(self, graph_op_result_name):
         self.graph_op_result_name = graph_op_result_name 
     
+    def setGraphCondition(self, graph_condition):
+        self.graph_condition = graph_condition 
+
     def _generateRankGraphNodes(self, row_content):
         self.graph_nodes = []
 
