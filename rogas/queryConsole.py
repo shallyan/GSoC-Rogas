@@ -47,7 +47,7 @@ def execQuery(conn, cur, executeCommand):
             tableResult = readTable(graphName, "")
             #write graph to file
             tmpGraphDir = "/dev/shm/RG_Tmp_Graph/"
-            createGraphName = 'create_cluster_' + graphName
+            createGraphName = 'crea_clu_' + graphName
             with open(tmpGraphDir + createGraphName, 'w') as f:
                 for edge in tableResult.row_content:
                     f.write(str(edge[0]) + '\t' + str(edge[1]) + os.linesep)
@@ -57,7 +57,7 @@ def execQuery(conn, cur, executeCommand):
             cExe.processCommand(clusterCommands, conn, cur, False)
 
             queryResult.setType('graph')
-            graphResult = GraphResult('all', graphType, createGraphName, createGraphName,'') 
+            graphResult = GraphResult('all', graphType, graphName, createGraphName,'') 
             graphResult.generateGraph()
             queryResult.setContent(graphResult)
     

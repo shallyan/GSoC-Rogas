@@ -56,23 +56,23 @@ class GraphResult(object):
     def setGraphCondition(self, graph_condition):
         self.graph_condition = graph_condition 
 
-    def _generateRankGraphNodes(self, row_content):
-        self.graph_nodes = []
+    def _generateRankSelectNodes(self, row_content):
+        node_size = {}
 
+        max_num = config.RANK_NODE_MAX_NUM
         #VertexId, Value
         for row in row_content:
-            node = {'id': str(row[0].strip()), 'size': float(row[1].strip()),'color': 0}
-            self.graph_nodes.append(node)
+            node_size[str(row[0].strip())] = float(row[1].strip())
+            if len(node_size) > max_num:
+                break
 
-        #keep max and min nodes
-        max_num = config.RANK_NODE_MAX_NUM
-        if len(self.graph_nodes) > max_num:
-            self.graph_nodes = self.graph_nodes[:max_num/2] + self.graph_nodes[-max_num/2:]
+        return node_size
 
-    def _generateClusterGraphNodes(self, row_content):
+    def _generateClusterGraphNodes(self, row_content, keep_nodes):
         self.graph_nodes = []
         cluster_id2size = dict()
         cluster_id2nodes = dict()
+        cluster_id2keep_nodes = dict()
         node_id2cluster_id = dict()
         node_id2score = dict()
         node_id_cluster_id2score_reatio = dict()
@@ -88,6 +88,8 @@ class GraphResult(object):
             
             cluster_id2size[cluster_id] = cluster_size
             cluster_id2nodes[cluster_id] = node_ids
+            cluster_id2keep_nodes[cluster_id] = {} 
+
             for node_id in node_ids:
                 node_id2cluster_id[node_id] = cluster_id 
                 node_id2score[node_id] = 0
@@ -98,7 +100,15 @@ class GraphResult(object):
             for cluster_id in cluster_id2size:
                 node_id_cluster_id2score_reatio[node_id][cluster_id] = 2.0
         
-        need_scale_size = all_nodes_num > config.CLUSTER_NODE_MAX_NUM
+        for node_id, node_value in keep_nodes.iteritems():
+            if node_id in node_id2cluster_id:
+                cluster_id = node_id2cluster_id[node_id]
+                cluster_id2keep_nodes[cluster_id][node_id] = node_value
+            else:
+                print 'data changes between graph creation and rank operation:', node_id
+            
+
+        need_scale_size = all_nodes_num > config.GRAPH_NODE_MAX_NUM
 
         for edge in self.graph_edges:
             start_node = edge['source']
@@ -125,25 +135,40 @@ class GraphResult(object):
         if need_scale_size:
             #calculate the size of each cluster
             for cluster_id, cluster_size in cluster_id2size.items():
-                cluster_id2size[cluster_id] = max(cluster_size * config.CLUSTER_NODE_MAX_NUM * 1.0 / all_nodes_num, 5)
+                cluster_id2size[cluster_id] = max(cluster_size * config.GRAPH_NODE_MAX_NUM * 1.0 / all_nodes_num, 5)
 
             #keep high score nodes
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
+                #get nodes num
+                max_nodes_num = min(len(cluster_nodes), cluster_id2size[cluster_id])
+
                 score_node_id_pair_lst = [(node_id2score[node_id], node_id) for node_id in cluster_nodes]
                 #sort node by score
                 sorted_score_node_id_pair_lst = sorted(score_node_id_pair_lst)
-                #get nodes
-                max_nodes_num = min(len(score_node_id_pair_lst), cluster_id2size[cluster_id])
-                for i in range(int(max_nodes_num)):
-                    node_id = sorted_score_node_id_pair_lst[i][1]
-                    node = {'id': node_id, 'size': 0.1, 'color': cluster_id}
+
+                #get  max_nodes_num from sorted_score_node_id_pair_lst and keep nodes
+                #keep nodes first
+                cluster_nodes_count = 0
+                for node_id, node_value in cluster_id2keep_nodes[cluster_id].iteritems():
+                    node = {'id': node_id, 'size': node_value, 'color': cluster_id, 'highlight': 1}
                     self.graph_nodes.append(node)
+                    cluster_nodes_count += 1
+
+                for i in range(len(sorted_score_node_id_pair_lst)):
+                    if cluster_nodes_count > max_nodes_num:
+                        break
+
+                    node_id = sorted_score_node_id_pair_lst[i][1]
+                    if node_id not in cluster_id2keep_nodes[cluster_id]:
+                        node = {'id': node_id, 'size': 0.05, 'color': cluster_id, 'highlight': 0}
+                        self.graph_nodes.append(node)
+                        cluster_nodes_count += 1
 
         else:
             #keep all nodes 
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
                 for node_id in cluster_nodes:
-                    node = {'id': node_id, 'size': 0.05, 'color': cluster_id}
+                    node = {'id': node_id, 'size': 0.05, 'color': cluster_id, 'highlight': 0}
                     self.graph_nodes.append(node)
 
     def _generatePathGraphNodes(self, row_content):
@@ -152,8 +177,8 @@ class GraphResult(object):
     def _generateGraphNodes(self):
         #To do
         self.graph_nodes = []
-        node1 = {'id': '1', 'size': 0.5 ,'color': 0}
-        node2 = {'id': '2', 'size': 0.5 ,'color': 0}
+        node1 = {'id': '1', 'size': 0.5 ,'color': 0, 'highlight': 0}
+        node2 = {'id': '2', 'size': 0.5 ,'color': 0, 'highlight': 0}
         self.graph_nodes.append(node1)
         self.graph_nodes.append(node2)
 
@@ -183,16 +208,21 @@ class GraphResult(object):
         self._generateGraphEdges(matGraphFile)
 
         #read graph nodes 
-        tableResult = queryConsole.readTable(self.graph_op_result_name, "")
-        #tableResult = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
         if self.graph_operator == 'rank':
-            self._generateRankGraphNodes(tableResult.row_content)
-        elif self.graph_operator == 'cluster':
-            self._generateClusterGraphNodes(tableResult.row_content)
-        elif self.graph_operator == 'path':
-            self._generatePathGraphNodes(tableResult.row_content)
+            query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
+            keep_nodes = self._generateRankSelectNodes(query_result.row_content)
+
+            origin_result = queryConsole.readTable('crea_clu_' + self.graph_name, "")
+            self._generateClusterGraphNodes(origin_result.row_content, keep_nodes)
         else:
-            self._generateClusterGraphNodes(tableResult.row_content)
+            query_result = queryConsole.readTable(self.graph_op_result_name, "")
+
+            if self.graph_operator == 'cluster':
+                self._generateClusterGraphNodes(query_result.row_content, {})
+            elif self.graph_operator == 'path':
+                self._generatePathGraphNodes(query_result.row_content)
+            else:
+                self._generateClusterGraphNodes(query_result.row_content, {})
 
         #filter edges by nodes
         self._filterEdgesByNodes()

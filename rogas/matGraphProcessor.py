@@ -49,7 +49,7 @@ def processCommand(executeCommand, conn ,cur):
             eIndex = lowerCaseCommand.index(";")
             graphName = lowerCaseCommand[sIndex:eIndex].strip() 
             cur.execute("DELETE FROM my_matgraphs where matgraphname = %s" % ("'" + graphName + "'"))
-            cur.execute("DROP TABLE create_cluster_" + graphName)
+            cur.execute("DROP TABLE crea_clu_" + graphName)
             conn.commit()
             if executeCommand.find("ungraph") != -1 or executeCommand.find("UNGRAPH") != -1:  
                 return (executeCommand.replace("ungraph", "materialized view")).replace("UNGRAPH", "materialized view"), graphName, "ungraph"
