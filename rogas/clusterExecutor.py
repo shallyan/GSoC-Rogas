@@ -45,7 +45,7 @@ class graphCreator():
                     self.g.add_edge(self.g.vertex(self.idIndexDict[sourceId]), self.g.vertex(self.idIndexDict[targetId]))
                     
 #based on the algorithms, choose different methods to run the operations
-def processCommand(clusterCommands, conn, cur):
+def processCommand(clusterCommands, conn, cur, isTempTable=True):
     graphPath = getGraph(clusterCommands[0])
     algorithmName = clusterCommands[1].lower().strip()
     
@@ -81,7 +81,7 @@ def processCommand(clusterCommands, conn, cur):
     elif "mc" == algorithmName:
         Graph = gtCreateGraph(clusterCommands)
         print "Start Algorithm"  
-        blockModel(clusterCommands, Graph, conn, cur)
+        blockModel(clusterCommands, Graph, conn, cur, isTempTable)
         
 #create a graph using snap
 def snapCreateGraph(clusterCommands):
@@ -131,7 +131,7 @@ def strongConnectedComponent(clusterCommands, Graph, conn, cur):
     #printClusterResult(Components) 
 
 #using Graph-tool to implement the MC community detection algorithm
-def blockModel(clusterCommands, Graph, conn, cur):
+def blockModel(clusterCommands, Graph, conn, cur, isTempTable):
     gt.openmp_set_num_threads(4) #enable 4 threads for runing algorithm
     g = Graph.g
     state = gt.minimize_blockmodel_dl(g)
@@ -146,7 +146,7 @@ def blockModel(clusterCommands, Graph, conn, cur):
         nodeID = Graph.indexIdDict[index]
         commDict[each].append(nodeID)
         index += 1
-    createTable(clusterCommands, commDict, conn, cur)
+    createTable(clusterCommands, commDict, conn, cur, isTempTable)
 
 #get the graph from materialised graph dir or tmp graph dir
 def getGraph(graphName):
@@ -162,14 +162,18 @@ def getGraph(graphName):
 
     
 #create temp table in the PostgreSQL.
-def createTable(clusterCommands, CmtyV, conn, cur):
+def createTable(clusterCommands, CmtyV, conn, cur, isTempTable=True):
     tableName = clusterCommands[-1]
     Col1= "ClusterID"
     Col2= "Size"
     Col3= "Members"
     
     #print "create temp table " + tableName + " (" + Col1 + " int not null primary key, " + Col2 + " int[]);"
-    cur.execute("create temp table " + tableName + " (" + Col1 + " int not null primary key, " + Col2 + " int, " + Col3 + " int[]);")
+    create_table_sql = "create "
+    if isTempTable:
+        create_table_sql += "temp " 
+    create_table_sql += "table " + tableName + " (" + Col1 + " int not null primary key, " + Col2 + " int, " + Col3 + " int[]);"
+    cur.execute(create_table_sql)
     conn.commit()
     
     communityId = 0

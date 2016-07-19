@@ -8,6 +8,7 @@ import config
 import queryConsole
 import os
 import random
+import helper
 
 class TableResult(object):
     def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, query_id=0):
@@ -42,8 +43,8 @@ class GraphResult(object):
         self.graph_type = graph_type
 
     def setGraphOperator(self, graph_operator):
-        if graph_operator not in ['rank', 'cluster', 'path']:
-            raise TypeError('graph operator must be rank, cluster or path') 
+        if graph_operator not in ['all', 'rank', 'cluster', 'path']:
+            raise TypeError('graph operator must be all, rank, cluster or path') 
         self.graph_operator = graph_operator
     
     def setGraphName(self, graph_name):
@@ -178,7 +179,7 @@ class GraphResult(object):
 
     def generateGraph(self):
         #read graph edges from file
-        matGraphFile = os.environ['HOME'] + "/RG_Mat_Graph/" + self.graph_name
+        matGraphFile = helper.getGraph(self.graph_name)
         self._generateGraphEdges(matGraphFile)
 
         #read graph nodes 
@@ -191,7 +192,7 @@ class GraphResult(object):
         elif self.graph_operator == 'path':
             self._generatePathGraphNodes(tableResult.row_content)
         else:
-            self._generateGraphNodes()
+            self._generateClusterGraphNodes(tableResult.row_content)
 
         #filter edges by nodes
         self._filterEdgesByNodes()
@@ -219,8 +220,8 @@ class QueryResult(object):
         self.setContent(result_content)
 
     def setType(self, result_type):
-        if result_type not in ['string', 'table', 'table_graph']:
-            raise TypeError('Query result type must be string, table or table_graph') 
+        if result_type not in ['string', 'table', 'graph', 'table_graph']:
+            raise TypeError('Query result type must be string, table , graph or table_graph') 
         self.result_type = result_type
     
     def setContent(self, result_content):

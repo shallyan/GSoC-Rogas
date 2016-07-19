@@ -6,6 +6,7 @@ The queryConsole is to read the query input, show query results and display erro
 import psycopg2
 import queryParser
 import matGraphProcessor
+import clusterExecutor as cExe
 import time
 import os
 from resultManager import QueryResult, GraphResult, TableResult, TableGraphResult, SingleResultManager
@@ -34,12 +35,31 @@ def execQuery(conn, cur, executeCommand):
     
     #query about creating or dropping a materialised graph    
     elif ("create" in lowerCaseCommand or "drop" in lowerCaseCommand) and ("ungraph" in lowerCaseCommand or "digraph" in lowerCaseCommand):
-        newExecuteCommand = matGraphProcessor.processCommand(executeCommand, conn, cur)
+        newExecuteCommand, graphName, graphType = matGraphProcessor.processCommand(executeCommand, conn, cur)
         eIndex = newExecuteCommand.index("view")
         cur.execute(newExecuteCommand[:]) #remove the first space
         #print newExecuteCommand[:eIndex] + "graph"
-        queryResult.setType("string")
-        queryResult.setContent("Graph Operation Done")
+
+        if "drop" in lowerCaseCommand:
+            queryResult.setType("string")
+            queryResult.setContent("Drop Graph Done")
+        else:
+            tableResult = readTable(graphName, "")
+            #write graph to file
+            tmpGraphDir = "/dev/shm/RG_Tmp_Graph/"
+            createGraphName = 'create_cluster_' + graphName
+            with open(tmpGraphDir + createGraphName, 'w') as f:
+                for edge in tableResult.row_content:
+                    f.write(str(edge[0]) + '\t' + str(edge[1]) + os.linesep)
+
+            #keep cluster result in database
+            clusterCommands = [createGraphName, 'MC', graphType, [], '', createGraphName]
+            cExe.processCommand(clusterCommands, conn, cur, False)
+
+            queryResult.setType('graph')
+            graphResult = GraphResult('all', graphType, createGraphName, createGraphName,'') 
+            graphResult.generateGraph()
+            queryResult.setContent(graphResult)
     
     #normal relational query without any graph functions
     else:

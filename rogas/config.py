@@ -5,7 +5,7 @@ This is the configuration
 '''
 
 #information to connect to database
-DB = "stackoverflow"
+DB = "acm"
 DB_USER = "postgres"
 DB_PASSWORD = "111"
 DB_PORT = 5432

@@ -24,9 +24,9 @@ def processCommand(executeCommand, conn ,cur):
             cur.execute("INSERT INTO my_matgraphs VALUES(%s, %s)" % ("'" + graphName + "'", "'ungraph'"))
             conn.commit()
             if executeCommand.find("ungraph") != -1:  
-                return executeCommand.replace("ungraph", "materialized view")
+                return executeCommand.replace("ungraph", "materialized view"), graphName, "ungraph"
             elif executeCommand.find("UNGRAPH") != -1:
-                return executeCommand.replace("UNGRAPH", "materialized view")
+                return executeCommand.replace("UNGRAPH", "materialized view"), graphName, "ungraph"
             else:
                 raise RuntimeError, "Graph type is not correct."
                 
@@ -38,9 +38,9 @@ def processCommand(executeCommand, conn ,cur):
             cur.execute("INSERT INTO my_matgraphs VALUES(%s, %s)" % ("'" + graphName + "'", "'digraph'"))
             conn.commit()
             if executeCommand.find("digraph") != -1:  
-                return executeCommand.replace("digraph", "materialized view")
+                return executeCommand.replace("digraph", "materialized view"), graphName, "digraph"
             elif executeCommand.find("DIGRAPH") != -1:
-                return executeCommand.replace("DIGRAPH", "materialized view")
+                return executeCommand.replace("DIGRAPH", "materialized view"), graphName, "digraph"
             else:
                 raise RuntimeError, "Graph type is not correct."
         
@@ -49,11 +49,12 @@ def processCommand(executeCommand, conn ,cur):
             eIndex = lowerCaseCommand.index(";")
             graphName = lowerCaseCommand[sIndex:eIndex].strip() 
             cur.execute("DELETE FROM my_matgraphs where matgraphname = %s" % ("'" + graphName + "'"))
+            cur.execute("DROP TABLE create_cluster_" + graphName)
             conn.commit()
             if executeCommand.find("ungraph") != -1 or executeCommand.find("UNGRAPH") != -1:  
-                return (executeCommand.replace("ungraph", "materialized view")).replace("UNGRAPH", "materialized view")
+                return (executeCommand.replace("ungraph", "materialized view")).replace("UNGRAPH", "materialized view"), graphName, "ungraph"
             elif executeCommand.find("digraph") != -1 or executeCommand.find("DIGRAPH") != -1:  
-                return (executeCommand.replace("digraph", "materialized view")).replace("DIGRAPH", "materialized view")
+                return (executeCommand.replace("digraph", "materialized view")).replace("DIGRAPH", "materialized view"), graphName, "digraph"
             else:
                 raise RuntimeError, "Graph type is not correct." 
             graphPath = os.environ['HOME']  + "/RG_Mat_Graph/" + graphName

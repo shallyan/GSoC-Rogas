@@ -108,27 +108,42 @@ function querySuccess(response)
     var result_type = response.result.type;
     var result_content = response.result.content;
 
+    var isHaveGraph = (result_type == "table_graph" || result_type == "graph");
+    var isHaveTable = (result_type == "table_graph" || result_type == "table");
+    var isOnlyGraph = (result_type == "graph");
+
     var insert_html = ''
     if (result_type != "string")
     {
         var table_content = result_content.table;
+
         //relation tab
         insert_html = '\
             <!-- result tab: Relations/Graphs -->\
             <div class="panel panel-info" id="rg_result' + tab_index + '">\
                 <div class="panel-heading">\
-                    <ul id="result_tab" class="nav nav-pills">\
+                    <ul id="result_tab" class="nav nav-pills">';
+
+        if (isHaveTable)
+        {
+            insert_html += '\
                         <li class="active">\
                             <a href="#relation' + tab_index + '" data-toggle="tab">\
                                 <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>\
                             </a>\
                         </li>';
+        }
 
-        //if the type is table_graph, add graph tab
-        if (result_type == "table_graph")
+        if (isHaveGraph)
         {
+            if (isOnlyGraph)
+                insert_html += '\
+                            <li class="active">';
+            else
+                insert_html += '\
+                            <li>';
+
             insert_html += '\
-                        <li>\
                             <a href="#graph' + tab_index + '" data-toggle="tab">\
                                 <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>\
                             </a>\
@@ -140,38 +155,48 @@ function querySuccess(response)
                 </div>\
                 <div id=result_tab_content" class="tab-content">';
 
-        if (result_type == "table_graph")
+        if (isHaveGraph)
         {
+            if (isOnlyGraph)
+                insert_html += '\
+                    <div class="tab-pane fade in active" id="graph' + tab_index + '">';
+            else
+                insert_html += '\
+                    <div class="tab-pane fade" id="graph' + tab_index + '">';
+
             insert_html += '\
-                <div class="tab-pane fade" id="graph' + tab_index + '"> \
                 </div>';
         }
-        insert_html += '\
-                    <div class="tab-pane fade in active" id="relation' + tab_index + '">\
-                        <div class="table-responsive" id="div_table' + tab_index + '">\
-                            <table class="table table-bordered table-hover table-striped">\
-                                <thead id="table_head' + tab_index + '">\
-                                    <tr class="active">';
 
-        var column_list = table_content.column_list;
-        for (var col_index = 0; col_index < column_list.length; ++col_index)
-            insert_html += '<th>' + column_list[col_index] + '</th>';
-        insert_html += '\
-                                    </tr>\
-                                </thead>';
+        if (isHaveTable)
+        {
+            insert_html += '\
+                        <div class="tab-pane fade in active" id="relation' + tab_index + '">\
+                            <div class="table-responsive" id="div_table' + tab_index + '">\
+                                <table class="table table-bordered table-hover table-striped">\
+                                    <thead id="table_head' + tab_index + '">\
+                                        <tr class="active">';
 
-        insert_html += generateTableBodyHTML(tab_index, table_content);
+            var column_list = table_content.column_list;
+            for (var col_index = 0; col_index < column_list.length; ++col_index)
+                insert_html += '<th>' + column_list[col_index] + '</th>';
+            insert_html += '\
+                                        </tr>\
+                                    </thead>';
 
-        insert_html += '\
-                            </table>\
-                        </div> <!-- table-->';
+            insert_html += generateTableBodyHTML(tab_index, table_content);
 
-        insert_html += generatePagerHTML(tab_index, table_content);
+            insert_html += '\
+                                </table>\
+                            </div> <!-- table-->';
 
-        insert_html += '\
-                    </div> <!-- relation tab-->\
-                </div>\
-            </div>';
+            insert_html += generatePagerHTML(tab_index, table_content);
+
+            insert_html += '\
+                        </div> <!-- relation tab-->\
+                    </div>\
+                </div>';
+        }
     }
     else {
         insert_html = '<div style="display: none" id="rg_result' + tab_index + '">\
@@ -186,7 +211,7 @@ function querySuccess(response)
     $('#rg_result' + tab_index).hide();
     $('#rg_result' + tab_index).fadeIn();
 
-    if (result_type == "table_graph")
+    if (isHaveGraph)
     {
         var graph_content = result_content.graph;
         drawGraph(tab_index, graph_content);
