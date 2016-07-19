@@ -58,14 +58,27 @@ class GraphResult(object):
 
     def _generateRankSelectNodes(self, row_content):
         node_size = {}
+        min_value = 1.0
+        max_value = 0.0
 
-        max_num = config.RANK_NODE_MAX_NUM
         #VertexId, Value
         for row in row_content:
-            node_size[str(row[0].strip())] = float(row[1].strip())
-            if len(node_size) > max_num:
+            node_value = float(row[1].strip())
+            node_size[str(row[0].strip())] = node_value           
+
+            if node_value < min_value: 
+                min_value = node_value
+            if node_value > max_value:
+                max_value = node_value
+
+            if len(node_size) > config.RANK_NODE_MAX_NUM:
                 break
 
+        #scale node value for visualizaiion 
+        for node_id, node_value in node_size.iteritems():
+            node_value = config.NODE_MIN_SIZE + int((node_value - min_value) * (config.NODE_MAX_SIZE - config.NODE_MIN_SIZE) / (0.01 + max_value - min_value))
+            node_size[node_id] = node_value
+        
         return node_size
 
     def _generateClusterGraphNodes(self, row_content, keep_nodes):
@@ -160,7 +173,7 @@ class GraphResult(object):
 
                     node_id = sorted_score_node_id_pair_lst[i][1]
                     if node_id not in cluster_id2keep_nodes[cluster_id]:
-                        node = {'id': node_id, 'size': 0.05, 'color': cluster_id, 'highlight': 0}
+                        node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0}
                         self.graph_nodes.append(node)
                         cluster_nodes_count += 1
 
@@ -168,7 +181,7 @@ class GraphResult(object):
             #keep all nodes 
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
                 for node_id in cluster_nodes:
-                    node = {'id': node_id, 'size': 0.05, 'color': cluster_id, 'highlight': 0}
+                    node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0}
                     self.graph_nodes.append(node)
 
     def _generatePathGraphNodes(self, row_content):
