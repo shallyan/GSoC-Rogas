@@ -76,7 +76,7 @@ class GraphResult(object):
 
         #scale node value for visualizaiion 
         for node_id, node_value in node_size.iteritems():
-            node_value = config.NODE_MIN_SIZE + int((node_value - min_value) * (config.NODE_MAX_SIZE - config.NODE_MIN_SIZE) / (0.01 + max_value - min_value))
+            node_value = config.NODE_MIN_SIZE + int((node_value - min_value) * (config.NODE_MAX_SIZE - config.NODE_MIN_SIZE) / (0.001 + max_value - min_value))
             node_size[node_id] = node_value
         
         return node_size
@@ -182,6 +182,8 @@ class GraphResult(object):
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
                 for node_id in cluster_nodes:
                     node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0}
+                    if node_id in keep_nodes:
+                        node['size'] = keep_nodes[node_id]
                     self.graph_nodes.append(node)
 
     def _generatePathGraphNodes(self, row_content):
@@ -224,6 +226,7 @@ class GraphResult(object):
         if self.graph_operator == 'rank':
             query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
             keep_nodes = self._generateRankSelectNodes(query_result.row_content)
+            print keep_nodes
 
             origin_result = queryConsole.readTable('crea_clu_' + self.graph_name, "")
             self._generateClusterGraphNodes(origin_result.row_content, keep_nodes)
