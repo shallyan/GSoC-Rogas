@@ -63,7 +63,7 @@ def execQuery(conn, cur, executeCommand):
             cExe.processCommand(clusterCommands, conn, cur, False)
 
             queryResult.setType('graph')
-            graphResult = GraphResult('all', graphType, graphName, createGraphName,'') 
+            graphResult = GraphResult('all', graphType, createGraphName, createGraphName,'') 
             graphResult.generateGraph()
             queryResult.setContent(graphResult)
     

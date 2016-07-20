@@ -226,7 +226,6 @@ class GraphResult(object):
         if self.graph_operator == 'rank':
             query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
             keep_nodes = self._generateRankSelectNodes(query_result.row_content)
-            print keep_nodes
 
             origin_result = queryConsole.readTable('crea_clu_' + self.graph_name, "")
             self._generateClusterGraphNodes(origin_result.row_content, keep_nodes)
