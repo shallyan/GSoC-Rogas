@@ -12,16 +12,22 @@ import os
 from resultManager import QueryResult, GraphResult, TableResult, TableGraphResult, SingleResultManager
 import config
 
+#this array is used to store the name of materialized graphs;
+mat_graph_cache = []
+
+#this array is used to store each function and its related result table name
+graphQueryAndResult = dict()
+
 #starts to execute the input query
 def execQuery(conn, cur, executeCommand):
     queryResult = QueryResult()
     lowerCaseCommand = executeCommand.lower()
     
     #graph query contains rank, cluster and path operation
-    if ("rank" in lowerCaseCommand) or ("cluster" in lowerCaseCommand)or ("path" in lowerCaseCommand):
+    if ("rank(" in lowerCaseCommand) or ("cluster(" in lowerCaseCommand)or ("path(" in lowerCaseCommand):
         startTime = time.time()
         
-        newExecuteCommand, graphOperationInfo = queryParser.queryAnalyse(executeCommand, conn, cur)
+        newExecuteCommand, graphOperationInfo = queryParser.queryAnalyse(executeCommand, conn, cur, mat_graph_cache, graphQueryAndResult)
         #newExecuteCommand = graphProcessor.queryAnalyse(executeCommand, conn, cur)
         #print "Total operation time is: ", (time.time() - startTime)
         #print newExecuteCommand  #for debug
@@ -34,7 +40,7 @@ def execQuery(conn, cur, executeCommand):
         queryResult.setContent(TableGraphResult(tableResult, graphResult))
     
     #query about creating or dropping a materialised graph    
-    elif ("create" in lowerCaseCommand or "drop" in lowerCaseCommand) and ("ungraph" in lowerCaseCommand or "digraph" in lowerCaseCommand):
+    elif ("create" in lowerCaseCommand[:7] or "drop" in lowerCaseCommand[:5]) and ("ungraph" in lowerCaseCommand or "digraph" in lowerCaseCommand):
         newExecuteCommand, graphName, graphType = matGraphProcessor.processCommand(executeCommand, conn, cur)
         eIndex = newExecuteCommand.index("view")
         cur.execute(newExecuteCommand[:]) #remove the first space
@@ -61,6 +67,30 @@ def execQuery(conn, cur, executeCommand):
             graphResult.generateGraph()
             queryResult.setContent(graphResult)
     
+    elif ("refresh" in lowerCaseCommand[:8]):
+        if  ("ungraph" in lowerCaseCommand) or  ("digraph" in lowerCaseCommand):
+            mat_graphName = (lowerCaseCommand.split()[-1])[:-1]
+            if mat_graphName in mat_graph_cache:
+                mat_graph_cache.remove(mat_graphName)
+            g_index = lowerCaseCommand.index("graph");
+            executeCommand = executeCommand[:].replace(executeCommand[g_index - 2 : g_index + 5], "materialized view")
+            cur.execute(executeCommand)
+            queryResult.setType("string")
+            queryResult.setContent("Graph Refreshed")
+            
+            try:
+                cur.execute("select tablename from pg_tables where schemaname like 'pg_temp%';")
+                temp_tables = cur.fetchall()
+                graphQueryAndResult.clear()
+                for each in temp_tables:
+                    for each_table in each:
+                        cur.execute("drop table %s;" %each_table)
+            except Exception as reason:
+                conn.commit()
+                cur.close()
+            
+
+            
     #normal relational query without any graph functions
     else:
         #print executeCommand[:]
@@ -81,7 +111,17 @@ def prepare():
         os.mkdir(homeDir + "/RG_Mat_Graph")
         
     if os.path.exists(memDir + "/RG_Tmp_Graph") == False:
-        os.mkdir(memDir + "/RG_Tmp_Graph")    
+        os.mkdir(memDir + "/RG_Tmp_Graph")
+        
+    try:
+        pre_cur = SingleConnection.cursor()
+        pre_cur.execute("select matgraphname from my_matgraphs;" )
+        mat_graph_result = pre_cur.fetchall()
+        for each_graph in mat_graph_result:
+            for each in each_graph:
+                pre_cur.execute("refresh materialized view  %s;" %each)
+    except Exception as reason:
+        pre_cur.close()
 
 def start(query):
     cur = SingleConnection.cursor()

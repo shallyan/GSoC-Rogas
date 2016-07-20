@@ -12,11 +12,9 @@ import rankExecutor as rExe
 import clusterExecutor as cExe
 import pathExecutor as pExe
 import time
-#this array is used to store each function and its related result table name
-graphQueryAndResult = dict()
 
 #Differentiates three types of graph sub-queries
-def queryAnalyse(executeCommand, conn, cur):
+def queryAnalyse(executeCommand, conn, cur, mat_graph_cache, graphQueryAndResult):
     lowerCaseCommand = executeCommand.lower()
     commandList = executeCommand.split()
     commandList.reverse()  #so that inner sub-queries can be executed first
@@ -39,7 +37,7 @@ def queryAnalyse(executeCommand, conn, cur):
             
             graphIndex = lowerCaseCommand.rindex("rank",0, indexMark)
             indexMark = graphIndex
-            rankCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
+            rankCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur, mat_graph_cache)
 
             graphQuery = getGQuery(executeCommand, graphIndex, rankCommands[-2])
             #print "graphQuery ", graphQuery  #for debug
@@ -66,7 +64,7 @@ def queryAnalyse(executeCommand, conn, cur):
                 
             graphIndex = lowerCaseCommand.rindex("cluster",0, indexMark)
             indexMark = graphIndex
-            clusterCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
+            clusterCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur, mat_graph_cache)
 
             graphQuery = getGQuery(executeCommand, graphIndex, clusterCommands[-2])
             #print "graphQuery ", graphQuery  #for debug
@@ -93,7 +91,7 @@ def queryAnalyse(executeCommand, conn, cur):
             
             graphIndex = lowerCaseCommand.rindex("path",0, indexMark)
             indexMark = graphIndex + 4
-            pathCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur)
+            pathCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur, mat_graph_cache)
 
             graphQuery = getGQuery(executeCommand, graphIndex, pathCommands[-2])
             #print "graphQuery ", graphQuery  #for debug
@@ -135,7 +133,7 @@ def findWordInString(word, sString):
             return wordIndex
            
 #use a list to store graph info like src, des, type of graphs, measurements/algorithms used in the operation, the related table name
-def getGQueryInfo(executeCommand, graphIndex, conn, cur):
+def getGQueryInfo(executeCommand, graphIndex, conn, cur, mat_graph_cache):
     matGraphDir = os.environ['HOME'] + "/RG_Mat_Graph/"
     tmpGraphDir = "/dev/shm/RG_Tmp_Graph/"
     
@@ -195,15 +193,16 @@ def getGQueryInfo(executeCommand, graphIndex, conn, cur):
             myrow = cur.fetchone()
             gQueryInfo.append(myrow[0]) #get graph Type
             
-            graphFile = open(matGraphDir + graphName, 'w')
-            cur.execute("select * from %s;" % (graphName))
-            conn.commit()
-            rows = cur.fetchall()
-            startW_time = time.time()
-            for i in rows:
-                graphFile.write(str(i[0]) + '\t' + str(i[1]) + os.linesep)
-            graphFile.close()     
-            print "Graph writing time: ", time.time() - startW_time 
+            if graphName not in mat_graph_cache:
+                graphFile = open(matGraphDir + graphName, 'w')
+                cur.execute("select * from %s;" % (graphName))
+                rows = cur.fetchall()
+                startW_time = time.time()
+                for i in rows:
+                    graphFile.write(str(i[0]) + '\t' + str(i[1]) + os.linesep)
+                graphFile.close()
+                mat_graph_cache.append(graphName)
+                print "Graph writing time: ", time.time() - startW_time 
             
             #print "find the view"
             gQueryInfo.append(commandArray)
