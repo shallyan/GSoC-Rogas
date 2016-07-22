@@ -21,3 +21,6 @@ GRAPH_NODE_MAX_NUM = 400
 NODE_MIN_SIZE = 15
 NODE_MAX_SIZE = 30 
 NODE_DEFAULT_SIZE = 10
+
+#whether graph_tool support openmp
+IS_GRAPH_TOOL_OPENMP = True 

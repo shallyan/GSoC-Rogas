@@ -7,6 +7,7 @@ After getting results from SNAP or Graph-tool, the clusterExecutor will transfor
 import snap
 import time
 import os
+import config
 import graph_tool.all as gt
 
 #graphCreator for graph=tool
@@ -132,7 +133,8 @@ def strongConnectedComponent(clusterCommands, Graph, conn, cur):
 
 #using Graph-tool to implement the MC community detection algorithm
 def blockModel(clusterCommands, Graph, conn, cur, isTempTable):
-    gt.openmp_set_num_threads(4) #enable 4 threads for runing algorithm
+    if config.IS_GRAPH_TOOL_OPENMP:
+        gt.openmp_set_num_threads(4) #enable 4 threads for runing algorithm
     g = Graph.g
     state = gt.minimize_blockmodel_dl(g)
     b = state.b
