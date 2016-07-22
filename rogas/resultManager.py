@@ -187,7 +187,63 @@ class GraphResult(object):
                     self.graph_nodes.append(node)
 
     def _generatePathGraphNodes(self, row_content):
-        self._generateGraphNodes()
+        self.graph_nodes = []
+
+        path_nodes_set = set()
+        path_edges2path_ids = dict()
+
+        def formatPathEdge(node_one, node_two, graph_type):
+            if graph_type == "digraph":
+                return (node_one, node_two)
+
+            if node_one < node_two:
+                return (node_one, node_two)
+            return (node_two, node_one)
+
+        #find nodes in the path
+        for index, row in enumerate(row_content):
+            if index >= config.PATH_MAX_NUM:
+                break
+
+            #PathId, Length, Paths 
+            path_id = int(row[0].strip())
+            path_nodes = str(row[2].strip())
+            path_node_ids = [node_id.strip() for node_id in path_nodes[1:-1].split(',')]
+            for node_id_index, node_id in enumerate(path_node_ids):
+                if node_id_index > 0:
+                    one_path_edge = formatPathEdge(path_node_ids[node_id_index-1], node_id, self.graph_type)
+                    if one_path_edge not in path_edges2path_ids:
+                        path_edges2path_ids[one_path_edge] = set()
+                    path_edges2path_ids[one_path_edge].add(2**path_id)
+                
+                path_nodes_set.add(node_id)
+
+        #find nodes around the path
+        around_path_nodes_set = set()
+        for edge in self.graph_edges:
+            start_node = edge['source']
+            end_node = edge['target']
+            if start_node in path_nodes_set and end_node in path_nodes_set:
+                format_edge = formatPathEdge(start_node, end_node, self.graph_type) 
+                if format_edge in path_edges2path_ids:
+                    #path ids are rewritten as 1, 2 ,4, 8, 16. so the sum will not be repeated
+                    edge['color'] = sum(path_edges2path_ids[format_edge])
+                    edge['length'] = 400 + random.random()*100
+                    edge['width'] += 1
+            elif start_node in path_nodes_set:
+                around_path_nodes_set.add(end_node)
+            elif end_node in path_nodes_set:
+                around_path_nodes_set.add(start_node)
+
+        #add nodes on the path
+        for node_id in path_nodes_set:
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 1}
+            self.graph_nodes.append(node) 
+                
+        #add nodes around the path
+        for node_id in around_path_nodes_set:
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0}
+            self.graph_nodes.append(node) 
 
     def _generateGraphNodes(self):
         #To do
@@ -204,7 +260,7 @@ class GraphResult(object):
             for line in f:
                 edge_nodes = line.strip().split()
                 edge = {'source': str(edge_nodes[0].strip()), 'target': str(edge_nodes[1].strip()),
-                        'length': 100, 'width': 1, 'color': 1}
+                        'length': 100 + random.random() * 50, 'width': 1, 'color': 0}
                 self.graph_edges.append(edge)
 
     def _filterEdgesByNodes(self):
@@ -224,18 +280,23 @@ class GraphResult(object):
 
         #read graph nodes 
         if self.graph_operator == 'rank':
+            #read query result
             query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
             keep_nodes = self._generateRankSelectNodes(query_result.row_content)
 
+            #read graph structure(cluster nodes)
             origin_result = queryConsole.readTable('crea_clu_' + self.graph_name, "")
             self._generateClusterGraphNodes(origin_result.row_content, keep_nodes)
+
+        elif self.graph_operator == 'path':
+            query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
+            self._generatePathGraphNodes(query_result.row_content)
+
         else:
             query_result = queryConsole.readTable(self.graph_op_result_name, "")
 
             if self.graph_operator == 'cluster':
                 self._generateClusterGraphNodes(query_result.row_content, {})
-            elif self.graph_operator == 'path':
-                self._generatePathGraphNodes(query_result.row_content)
             else:
                 self._generateClusterGraphNodes(query_result.row_content, {})
 

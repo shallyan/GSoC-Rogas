@@ -17,6 +17,9 @@ PAGE_MAX_NUM = 10
 RANK_NODE_MAX_NUM = 100
 GRAPH_NODE_MAX_NUM = 400
 
+#max path num, because of max 20 colors
+PATH_MAX_NUM = 20
+
 #visualization
 NODE_MIN_SIZE = 15
 NODE_MAX_SIZE = 30 
