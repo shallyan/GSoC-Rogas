@@ -122,6 +122,7 @@ def prepare():
                 pre_cur.execute("refresh materialized view  %s;" %each)
     except Exception as reason:
         pre_cur.close()
+        SingleConnection.rollback()
 
 def start(query):
     cur = SingleConnection.cursor()
