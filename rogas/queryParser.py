@@ -93,7 +93,15 @@ def queryAnalyse(executeCommand, conn, cur, mat_graph_cache, graphQueryAndResult
             indexMark = graphIndex + 4
             pathCommands = getGQueryInfo(executeCommand, graphIndex, conn, cur, mat_graph_cache)
 
-            graphQuery = getGQuery(executeCommand, graphIndex, pathCommands[-2])
+            #graphQuery = getGQuery(executeCommand, graphIndex, pathCommands[-2])
+            '''
+            this is a temp solution to handle the issue about the path operation: order-by and limit clauses need to be placed before the where clause
+            so that the visualisation part can get the abutting order-by and limit clauses.
+            Once the issue has been fixed, need to uncomment the sentence above
+            '''
+            graphQuery_tuple = getGQuery(executeCommand, graphIndex, pathCommands[-2])
+            graphQuery = graphQuery_tuple[0]
+            ol_command = graphQuery_tuple[1]
             #print "graphQuery ", graphQuery  #for debug
             
             #not run the same graph command again
@@ -107,11 +115,20 @@ def queryAnalyse(executeCommand, conn, cur, mat_graph_cache, graphQueryAndResult
 
             #tuple: (graph_operator, graph_type, graph_name, result_table_name, graph_op_condition)
             graphOperationList.append(('path', pathCommands[2], pathCommands[0], graphQueryAndResult[graphQuery], pathCommands[4]))
-            
-            
+        
     #rewrite the query
     for eachStr in graphQueryAndResult.keys():
         executeCommand = executeCommand.replace(eachStr,graphQueryAndResult.get(eachStr))
+
+    '''
+    this is a temp solution to handle the issue about the path operation: order-by and limit clauses need to be placed before the where clause
+    so that the visualisation part can get the abutting order-by and limit clauses.
+    Once the issue has been fixed, need to comment the sentence below
+    '''
+    if "path_" in executeCommand:
+        print "ol_command: ", ol_command
+        executeCommand = executeCommand.replace(";", " " + ol_command + ";")
+        print executeCommand
 
     #get the most outside graph operator
     outside_graph_info = graphOperationList[-1]
@@ -319,12 +336,26 @@ def getGQuery(executeCommand, graphIndex, commandArray):
         lastBracketIndex = executeCommand.index(")", queryEndIndex)
         command = executeCommand[graphIndex : lastBracketIndex+1]
         
+        '''
+        #This part of code is for setting up the syntax limit for path operation.the order  and limit clause should be placed behind the where clause.
         lowCommand = command.lower()
         w_index = lowCommand.index("where")
         if "order" in command.lower()[ : w_index] or "limit" in command.lower()[ : w_index]:
             raise RuntimeError, "Syntax errors: clauses about order by and limit should be placed behind the where clause."       
-        return command
-                
+        '''
+        
+        #return command
+        '''
+        this is a temp solution to handle the issue about the path operation: order-by and limit clauses need to be placed before the where clause
+        so that the visualisation part can get the abutting order-by and limit clauses.
+        Once the issue has been fixed, need to uncomment the sentence above
+        '''
+        lowCommand = command.lower()
+        bracket_index = lowCommand.index(")")
+        w_index = lowCommand.index("where")
+        ol_command = lowCommand[bracket_index + 1 : w_index].strip()
+        return command, ol_command
+    
     elif lowerCaseCommand[graphIndex] == "r" or lowerCaseCommand[graphIndex] == "c": # for rank and cluster operations
         if len(commandArray) == 0:  #for materialized graph
             leftBracketIndex = executeCommand.index('(', graphIndex)
