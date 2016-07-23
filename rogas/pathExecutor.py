@@ -9,7 +9,7 @@ import os
 import queryParser
 
 #based on the path expression, choose different methods to run the operations
-def processCommand(pathCommands, conn ,cur):
+def processCommand(pathCommands, conn ,cur, graphQueryAndResult):
     
     #createGraph
     graphPath = getGraph(pathCommands[0])
@@ -38,8 +38,8 @@ def processCommand(pathCommands, conn ,cur):
             nodeCommand = eachCommand[1].replace(' ', ' distinct ', 1)  #a column only contains unique value
             #print nodeCommand
             if ("rank" in nodeCommand) or ("cluster" in nodeCommand):
-                for eachStr in queryParser.graphQueryAndResult.keys():
-                    nodeCommand = nodeCommand.replace(eachStr,queryParser.graphQueryAndResult.get(eachStr))
+                for eachStr in graphQueryAndResult.keys():
+                    nodeCommand = nodeCommand.replace(eachStr, graphQueryAndResult.get(eachStr))
             cur.execute(nodeCommand)
             
             rows = cur.fetchall()

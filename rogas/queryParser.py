@@ -98,10 +98,10 @@ def queryAnalyse(executeCommand, conn, cur, mat_graph_cache, graphQueryAndResult
             
             #not run the same graph command again
             if graphQuery not in graphQueryAndResult:
-                pathPara = str(hash(pathCommands[1]))[1:]
+                pathPara = str(hash(graphQuery))[1:]
                 resultTableName = "path_" + pathCommands[0] + pathPara + str(operatorID) #the last element is tableName
                 pathCommands.append(resultTableName)
-                pExe.processCommand(pathCommands, conn, cur)
+                pExe.processCommand(pathCommands, conn, cur, graphQueryAndResult)
                 graphQueryAndResult[graphQuery] = resultTableName
             #print "pathCommands ", pathCommands  #for debug
 
@@ -318,6 +318,11 @@ def getGQuery(executeCommand, graphIndex, commandArray):
                 queryEndIndex = queryIndex + len(eachQuery[-1])
         lastBracketIndex = executeCommand.index(")", queryEndIndex)
         command = executeCommand[graphIndex : lastBracketIndex+1]
+        
+        lowCommand = command.lower()
+        w_index = lowCommand.index("where")
+        if "order" in command.lower()[ : w_index] or "limit" in command.lower()[ : w_index]:
+            raise RuntimeError, "Syntax errors: clauses about order by and limit should be placed behind the where clause."       
         return command
                 
     elif lowerCaseCommand[graphIndex] == "r" or lowerCaseCommand[graphIndex] == "c": # for rank and cluster operations
