@@ -163,7 +163,7 @@ class GraphResult(object):
                 #keep nodes first
                 cluster_nodes_count = 0
                 for node_id, node_value in cluster_id2keep_nodes[cluster_id].iteritems():
-                    node = {'id': node_id, 'size': node_value, 'color': cluster_id, 'highlight': 1}
+                    node = {'id': node_id, 'size': node_value, 'color': cluster_id, 'highlight': 1, 'opacity': 1.0}
                     self.graph_nodes.append(node)
                     cluster_nodes_count += 1
 
@@ -173,7 +173,7 @@ class GraphResult(object):
 
                     node_id = sorted_score_node_id_pair_lst[i][1]
                     if node_id not in cluster_id2keep_nodes[cluster_id]:
-                        node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0}
+                        node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': 1.0}
                         self.graph_nodes.append(node)
                         cluster_nodes_count += 1
 
@@ -181,7 +181,7 @@ class GraphResult(object):
             #keep all nodes 
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
                 for node_id in cluster_nodes:
-                    node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0}
+                    node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': 1.0}
                     if node_id in keep_nodes:
                         node['size'] = keep_nodes[node_id]
                     self.graph_nodes.append(node)
@@ -221,6 +221,7 @@ class GraphResult(object):
         #find nodes around the path
         around_path_nodes_set = set()
         for edge in self.graph_edges:
+            edge['opacity'] = config.UNHIGHLIGHT_OPACITY 
             start_node = edge['source']
             end_node = edge['target']
             if start_node in path_nodes_set and end_node in path_nodes_set:
@@ -230,6 +231,7 @@ class GraphResult(object):
                     edge['color'] = sum(path_edges2path_ids[format_edge])
                     edge['length'] = 400 + random.random()*100
                     edge['width'] += 1
+                    edge['opacity'] = 1.0
             elif start_node in path_nodes_set:
                 around_path_nodes_set.add(end_node)
             elif end_node in path_nodes_set:
@@ -237,21 +239,13 @@ class GraphResult(object):
 
         #add nodes on the path
         for node_id in path_nodes_set:
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 1}
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 1, 'opacity': 1.0}
             self.graph_nodes.append(node) 
                 
         #add nodes around the path
         for node_id in around_path_nodes_set:
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0}
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': config.UNHIGHLIGHT_OPACITY}
             self.graph_nodes.append(node) 
-
-    def _generateGraphNodes(self):
-        #To do
-        self.graph_nodes = []
-        node1 = {'id': '1', 'size': 0.5 ,'color': 0, 'highlight': 0}
-        node2 = {'id': '2', 'size': 0.5 ,'color': 0, 'highlight': 0}
-        self.graph_nodes.append(node1)
-        self.graph_nodes.append(node2)
 
     def _generateGraphEdges(self, matGraphFile): 
         self.graph_edges = []
@@ -260,7 +254,7 @@ class GraphResult(object):
             for line in f:
                 edge_nodes = line.strip().split()
                 edge = {'source': str(edge_nodes[0].strip()), 'target': str(edge_nodes[1].strip()),
-                        'length': 100 + random.random() * 50, 'width': 1, 'color': 0}
+                        'length': 100 + random.random() * 50, 'width': 1, 'color': 0, 'opacity': 1.0}
                 self.graph_edges.append(edge)
 
     def _filterEdgesByNodes(self):

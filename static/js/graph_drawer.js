@@ -76,6 +76,9 @@ function drawGraph(tab_index, graph_content)
                         .style("stroke-width",function(edge){
                             return edge.width;
                         })
+                        .style("opacity", function(edge){
+                            return edge.opacity;
+                        })
                         .attr("marker-end","url(#end)");
     
     var svg_nodes = g.selectAll("node")
@@ -88,6 +91,9 @@ function drawGraph(tab_index, graph_content)
                         .attr("r", function(node){
                             return node.size;
                         })
+                        .style("opacity", function(node){
+                            return node.opacity;
+                        })
                         .style("fill", function(node){
                             return color_scale(node.color % 20);
                         });
@@ -97,6 +103,9 @@ function drawGraph(tab_index, graph_content)
                         .enter()
                         .append("text")
                         .style("fill", "black")
+                        .style("opacity", function(node){
+                            return node.opacity;
+                        })
                         .attr("dx", function(node){
                             return node.size;
                         })

@@ -25,5 +25,7 @@ NODE_MIN_SIZE = 15
 NODE_MAX_SIZE = 30 
 NODE_DEFAULT_SIZE = 10
 
+UNHIGHLIGHT_OPACITY = 0.2
+
 #whether graph_tool support openmp
 IS_GRAPH_TOOL_OPENMP = True 
