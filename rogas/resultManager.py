@@ -136,7 +136,7 @@ class GraphResult(object):
                     node_id2score[start_node] += 1.0
                     node_id2score[end_node] += 1.0
             else:
-                edge['length'] = 400 + random.random()*100
+                edge['length'] = 700 + random.random()*100
                 if need_scale_size:
                     node_id2score[start_node] += node_id_cluster_id2score_reatio[start_node][target_cluster_id]
                     node_id_cluster_id2score_reatio[start_node][target_cluster_id] *= 0.8
@@ -186,19 +186,19 @@ class GraphResult(object):
                         node['size'] = keep_nodes[node_id]
                     self.graph_nodes.append(node)
 
+    def _formatPathEdge(self, node_one, node_two):
+        if self.graph_type == "digraph":
+            return (node_one, node_two)
+
+        if node_one < node_two:
+            return (node_one, node_two)
+        return (node_two, node_one)
+
     def _generatePathGraphNodes(self, row_content):
         self.graph_nodes = []
 
         path_nodes_set = set()
         path_edges2path_ids = dict()
-
-        def formatPathEdge(node_one, node_two, graph_type):
-            if graph_type == "digraph":
-                return (node_one, node_two)
-
-            if node_one < node_two:
-                return (node_one, node_two)
-            return (node_two, node_one)
 
         #find nodes in the path
         for index, row in enumerate(row_content):
@@ -211,7 +211,7 @@ class GraphResult(object):
             path_node_ids = [node_id.strip() for node_id in path_nodes[1:-1].split(',')]
             for node_id_index, node_id in enumerate(path_node_ids):
                 if node_id_index > 0:
-                    one_path_edge = formatPathEdge(path_node_ids[node_id_index-1], node_id, self.graph_type)
+                    one_path_edge = self._formatPathEdge(path_node_ids[node_id_index-1], node_id)
                     if one_path_edge not in path_edges2path_ids:
                         path_edges2path_ids[one_path_edge] = set()
                     path_edges2path_ids[one_path_edge].add(2**path_id)
@@ -225,12 +225,11 @@ class GraphResult(object):
             start_node = edge['source']
             end_node = edge['target']
             if start_node in path_nodes_set and end_node in path_nodes_set:
-                format_edge = formatPathEdge(start_node, end_node, self.graph_type) 
+                format_edge = self._formatPathEdge(start_node, end_node) 
                 if format_edge in path_edges2path_ids:
                     #path ids are rewritten as 1, 2 ,4, 8, 16. so the sum will not be repeated
                     edge['color'] = sum(path_edges2path_ids[format_edge])
                     edge['length'] = 400 + random.random()*100
-                    edge['width'] += 1
                     edge['opacity'] = 1.0
             elif start_node in path_nodes_set:
                 around_path_nodes_set.add(end_node)
@@ -249,13 +248,24 @@ class GraphResult(object):
 
     def _generateGraphEdges(self, matGraphFile): 
         self.graph_edges = []
+        graph_edges_dict = dict()
 
         with open(matGraphFile) as f:
             for line in f:
                 edge_nodes = line.strip().split()
-                edge = {'source': str(edge_nodes[0].strip()), 'target': str(edge_nodes[1].strip()),
-                        'length': 100 + random.random() * 50, 'width': 1, 'color': 0, 'opacity': 1.0}
-                self.graph_edges.append(edge)
+                format_edge = self._formatPathEdge(str(edge_nodes[0].strip()), str(edge_nodes[1].strip()))
+                if format_edge not in graph_edges_dict:
+                    graph_edges_dict[format_edge] = 0
+                graph_edges_dict[format_edge] += 1
+
+        edge_weights = graph_edges_dict.values()
+        edge_max_weight = max(edge_weights) + 1.0 
+        edge_min_weight = min(edge_weights) 
+        for format_edge, weight in graph_edges_dict.iteritems():
+            width = 1.0 + ((weight- edge_min_weight) * (config.NODE_DEFAULT_SIZE - 1.0) / (edge_max_weight- edge_min_weight))
+            edge = {'source': format_edge[0], 'target': format_edge[1],
+                    'length': 100 + random.random() * 50, 'width': width, 'color': 0, 'opacity': 1.0}
+            self.graph_edges.append(edge)
 
     def _filterEdgesByNodes(self):
         all_nodes_id_set = set([node['id'] for node in self.graph_nodes])
