@@ -94,6 +94,16 @@ function drawGraph(tab_index, graph_content)
                         .style("opacity", function(node){
                             return node.opacity;
                         })
+                        .style("stroke", function(node){
+                            if (node.highlight == 0)
+                                return "blue";
+                            return "red";
+                        })
+                        .style("stroke-width",function(node){
+                            if (node.highlight == 0)
+                                return 1;
+                            return 3;
+                        })
                         .style("fill", function(node){
                             return color_scale(node.color % 20);
                         });

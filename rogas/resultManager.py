@@ -199,6 +199,7 @@ class GraphResult(object):
 
         path_nodes_set = set()
         path_edges2path_ids = dict()
+        start_end_nodes_set = set()
 
         #find nodes in the path
         for index, row in enumerate(row_content):
@@ -209,6 +210,12 @@ class GraphResult(object):
             path_id = int(row[0].strip())
             path_nodes = str(row[2].strip())
             path_node_ids = [node_id.strip() for node_id in path_nodes[1:-1].split(',')]
+
+            #get start node and end node for highlight
+            if len(path_node_ids) > 0:
+                start_end_nodes_set.add(path_node_ids[0])
+                start_end_nodes_set.add(path_node_ids[-1])
+
             for node_id_index, node_id in enumerate(path_node_ids):
                 if node_id_index > 0:
                     one_path_edge = self._formatPathEdge(path_node_ids[node_id_index-1], node_id)
@@ -238,7 +245,8 @@ class GraphResult(object):
 
         #add nodes on the path
         for node_id in path_nodes_set:
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 1, 'opacity': 1.0}
+            highlight = 1 if node_id in start_end_nodes_set else 0
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': highlight, 'opacity': 1.0}
             self.graph_nodes.append(node) 
                 
         #add nodes around the path
