@@ -14,10 +14,12 @@ DB_PORT = 5432
 PAGE_MAX_NUM = 10 
 
 #graph max nodes
-RANK_NODE_MAX_NUM = 100
+#max top K rank nodes
+RANK_NODE_MAX_NUM = 20
+
 GRAPH_NODE_MAX_NUM = 400
 
-#max path num, because of max 20 colors
+#max paths num, because of max 20 colors
 PATH_MAX_NUM = 20
 
 #visualization
@@ -28,4 +30,4 @@ NODE_DEFAULT_SIZE = 10
 UNHIGHLIGHT_OPACITY = 0.2
 
 #whether graph_tool support openmp
-IS_GRAPH_TOOL_OPENMP = False 
+IS_GRAPH_TOOL_OPENMP = True 

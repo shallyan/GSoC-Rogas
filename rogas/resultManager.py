@@ -9,6 +9,7 @@ import queryConsole
 import os
 import random
 import helper
+import pathExecutor
 
 class TableResult(object):
     def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, query_id=0):
@@ -57,30 +58,77 @@ class GraphResult(object):
         self.graph_condition = graph_condition 
 
     def _generateRankSelectNodes(self, row_content):
-        node_size = {}
+        node_size_dict = {}
         min_value = 1.0
         max_value = 0.0
 
         #VertexId, Value
         for row in row_content:
             node_value = float(row[1].strip())
-            node_size[str(row[0].strip())] = node_value           
+            node_size_dict[str(row[0].strip())] = node_value
 
             if node_value < min_value: 
                 min_value = node_value
             if node_value > max_value:
                 max_value = node_value
 
-            if len(node_size) > config.RANK_NODE_MAX_NUM:
+            if len(node_size_dict) > config.RANK_NODE_MAX_NUM:
                 break
 
         #scale node value for visualizaiion 
-        for node_id, node_value in node_size.iteritems():
+        for node_id, node_value in node_size_dict.iteritems():
             node_value = config.NODE_MIN_SIZE + int((node_value - min_value) * (config.NODE_MAX_SIZE - config.NODE_MIN_SIZE) / (0.001 + max_value - min_value))
-            node_size[node_id] = node_value
+            node_size_dict[node_id] = node_value
         
-        return node_size
+        return node_size_dict
 
+    def  _generateRankGraphNodes(self, row_content):
+        self.graph_nodes = []
+
+        rank_nodes = self._generateRankSelectNodes(row_content)
+
+        around_nodes = set()
+        for edge in self.graph_edges:
+            start_node = edge['source']
+            end_node = edge['target']
+            if start_node in rank_nodes and end_node in rank_nodes:
+                continue
+            elif start_node in rank_nodes:
+                around_nodes.add(end_node)
+            elif end_node in rank_nodes:
+                around_nodes.add(start_node)
+
+        #find shortest path between two rank nodes
+        graph_file = helper.getGraph(self.graph_name)
+        graph = pathExecutor.createGraph(graph_file, self.graph_type) 
+        
+        format_edges_set = set()
+        for start_node in rank_nodes:
+            for end_node in rank_nodes:
+                if start_node == end_node:
+                    continue
+
+                format_edge = self._formatPathEdge(start_node, end_node)
+                if format_edge in format_edges_set: 
+                    continue
+
+                format_edges_set.add(format_edge)
+                nodes_list = pathExecutor.nodesInShortestPath(graph, int(format_edge[0]), int(format_edge[1]))
+                for node_id in nodes_list:
+                    node_id = str(node_id)
+                    if node_id not in rank_nodes:
+                        around_nodes.add(node_id)
+
+        #add selected nodes 
+        for node_id in rank_nodes:
+            node = {'id': node_id, 'size': rank_nodes[node_id], 'color': 0, 'highlight': 1, 'opacity': 1.0}
+            self.graph_nodes.append(node) 
+                
+        #add nodes around 
+        for node_id in around_nodes:
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': 1.0}
+            self.graph_nodes.append(node) 
+        
     def _generateClusterGraphNodes(self, row_content, keep_nodes):
         self.graph_nodes = []
         cluster_id2size = dict()
@@ -287,23 +335,16 @@ class GraphResult(object):
 
     def generateGraph(self):
         #read graph edges from file
-        matGraphFile = helper.getGraph(self.graph_name)
-        self._generateGraphEdges(matGraphFile)
+        graph_file = helper.getGraph(self.graph_name)
+        self._generateGraphEdges(graph_file)
 
         #read graph nodes 
         if self.graph_operator == 'rank':
-            #read query result
             query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
-            keep_nodes = self._generateRankSelectNodes(query_result.row_content)
-
-            #read graph structure(cluster nodes)
-            origin_result = queryConsole.readTable('crea_clu_' + self.graph_name, "")
-            self._generateClusterGraphNodes(origin_result.row_content, keep_nodes)
-
+            self._generateRankGraphNodes(query_result.row_content)
         elif self.graph_operator == 'path':
             query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
             self._generatePathGraphNodes(query_result.row_content)
-
         else:
             query_result = queryConsole.readTable(self.graph_op_result_name, "")
 

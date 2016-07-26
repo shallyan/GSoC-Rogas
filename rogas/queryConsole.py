@@ -32,7 +32,7 @@ def execQuery(conn, cur, executeCommand):
         #print "Total operation time is: ", (time.time() - startTime)
         #print newExecuteCommand  #for debug
         cur.execute(newExecuteCommand[:]) #remove the first space
-        print "newExecuteCommand: ", newExecuteCommand
+        #print "newExecuteCommand: ", newExecuteCommand
 
         queryResult.setType("table_graph")
         tableResult = SingleResultManager.extractTableResultFromCursor(cur)
