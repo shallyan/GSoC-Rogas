@@ -273,6 +273,10 @@ class GraphResult(object):
                 
                 path_nodes_set.add(node_id)
 
+        #edge default color: 0
+        exist_color_map = dict()
+        exist_color_map[0] = 0
+        
         #find nodes around the path
         around_path_nodes_set = set()
         for edge in self.graph_edges:
@@ -283,7 +287,12 @@ class GraphResult(object):
                 format_edge = self._formatPathEdge(start_node, end_node) 
                 if format_edge in path_edges2path_ids:
                     #path ids are rewritten as 1, 2 ,4, 8, 16. so the sum will not be repeated
-                    edge['color'] = sum(path_edges2path_ids[format_edge])
+                    #and we map the 1, 2, 4 to 1, 2, 3
+                    current_color_value = sum(path_edges2path_ids[format_edge])
+                    if current_color_value not in exist_color_map:
+                        current_color_index = len(exist_color_map)
+                        exist_color_map[current_color_value] = current_color_index
+                    edge['color'] = exist_color_map[current_color_value] 
                     edge['length'] = 400 + random.random()*100
                     edge['opacity'] = 1.0
             elif start_node in path_nodes_set:
@@ -318,7 +327,7 @@ class GraphResult(object):
         edge_max_weight = max(edge_weights) + 1.0 
         edge_min_weight = min(edge_weights) 
         for format_edge, weight in graph_edges_dict.iteritems():
-            width = 1.0 + ((weight- edge_min_weight) * (config.NODE_DEFAULT_SIZE - 1.0) / (edge_max_weight- edge_min_weight))
+            width = config.EDGE_MIN_WIDTH + ((weight- edge_min_weight) * (config.EDGE_MAX_WIDTH - config.EDGE_MIN_WIDTH) / (edge_max_weight- edge_min_weight))
             edge = {'source': format_edge[0], 'target': format_edge[1],
                     'length': 100 + random.random() * 50, 'width': width, 'color': 0, 'opacity': 1.0}
             self.graph_edges.append(edge)

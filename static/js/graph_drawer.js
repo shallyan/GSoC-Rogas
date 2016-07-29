@@ -10,6 +10,7 @@ function drawGraph(tab_index, graph_content)
     var width = $("#rg_result" + tab_index).width();
     var min_zoom = 0.1;
     var max_zoom = 2.0;
+    var max_color = 0;
 
     var svg = d3.select("#graph" +  tab_index)
                 .append("svg")
@@ -22,10 +23,16 @@ function drawGraph(tab_index, graph_content)
     //convert id to index from 0 
     var node_id_index_map = d3.map();
     for (var index = 0; index < graph_nodes.length; ++index)
+    {
+        if (graph_nodes[index].color > max_color)
+            max_color = graph_nodes[index].color; 
         node_id_index_map.set(graph_nodes[index].id, index);
+    }
 
     for (var index = 0; index < graph_edges.length; ++index)
     {
+        if (graph_edges[index].color > max_color)
+            max_color = graph_edges[index].color; 
         graph_edges[index].source = node_id_index_map.get(graph_edges[index].source);
         graph_edges[index].target = node_id_index_map.get(graph_edges[index].target);
     }
@@ -41,6 +48,11 @@ function drawGraph(tab_index, graph_content)
     force.start();	
 
     var color_scale = d3.scale.category20();
+    if (max_color < 10)
+        color_scale = d3.scale.category10();
+
+    //force the first color is blue so that node is in blue by default in every graph
+    color_scale(0);
 
     if (isDirectedGraph)
     {
@@ -60,9 +72,9 @@ function drawGraph(tab_index, graph_content)
            .append("path")
            .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2");
     }
-
-    var g = svg.append("g");
     
+    var g = svg.append("g");
+
     var svg_edges = g.selectAll("path")
                         .data(graph_edges)
                         .enter()
@@ -80,7 +92,7 @@ function drawGraph(tab_index, graph_content)
                             return edge.opacity;
                         })
                         .attr("marker-end","url(#end)");
-    
+                        
     var svg_nodes = g.selectAll("node")
                         .data(graph_nodes)
                         .enter()
@@ -123,7 +135,7 @@ function drawGraph(tab_index, graph_content)
                         .text(function(node){
                             return node.id;
                         });
-
+    
     svg_nodes.on("mousedown", function(d){
         d3.event.stopPropagation();
     });

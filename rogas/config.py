@@ -27,6 +27,10 @@ NODE_MIN_SIZE = 15
 NODE_MAX_SIZE = 30 
 NODE_DEFAULT_SIZE = 10
 
+#edge width
+EDGE_MIN_WIDTH = 2
+EDGE_MAX_WIDTH = NODE_DEFAULT_SIZE
+
 UNHIGHLIGHT_OPACITY = 0.2
 
 #whether graph_tool support openmp
