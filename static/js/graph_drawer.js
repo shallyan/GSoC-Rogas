@@ -93,11 +93,16 @@ function drawGraph(tab_index, graph_content)
                         })
                         .attr("marker-end","url(#end)");
                         
+    var drag = force.drag()
+                    .on("dragend", function(node){
+                        node.fixed = true;
+                    });
+
     var svg_nodes = g.selectAll("node")
                         .data(graph_nodes)
                         .enter()
                         .append("g")
-                        .call(force.drag);
+                        .call(drag);
 
     var node_imgs = svg_nodes.append("circle")
                         .attr("r", function(node){
@@ -118,6 +123,9 @@ function drawGraph(tab_index, graph_content)
                         })
                         .style("fill", function(node){
                             return color_scale(node.color % 20);
+                        })
+                        .on("dblclick", function(node){
+                            node.fixed = false;
                         });
 
     var svg_texts = g.selectAll("text")
