@@ -193,13 +193,15 @@ function querySuccess(response)
             insert_html += generatePagerHTML(tab_index, table_content);
 
             insert_html += '\
-                        </div> <!-- relation tab-->\
-                    </div>\
-                </div>';
+                        </div> <!-- relation tab-->';
         }
+
+        insert_html += '\
+                </div> <!-- result content -->\
+            </div>';
     }
     else {
-        insert_html = '<div style="display: none" id="rg_result' + tab_index + '">\
+        insert_html = '<div id="rg_result' + tab_index + '">\
                            <div class="alert alert-info" role="alert">\
                                <p>' + result_content + '</p>\
                            </div>\
