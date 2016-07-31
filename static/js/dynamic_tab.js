@@ -2,7 +2,7 @@ $(function () {
     var tab_index = 1;
     $('#query_add a[role="button"]').on('click', function () { 
         //insert one query at the last of query tabs
-        $('ul#query_tab li:last-child').before('<li id="query' + tab_index + '"><a href="#query_content' + tab_index + '" data-toggle="tab"> <strong> Query' + tab_index + ' </strong> <button type="button" class="btn btn-warning btn-xs" onclick="removeTab(' + tab_index + ');"><span class="glyphicon glyphicon-remove"></span></button></a></li>');
+        $('ul#query_tab li:last-child').before('<li id="query' + tab_index + '"><a href="#query_content' + tab_index + '" data-toggle="tab"> <strong id="query_tab_name' + tab_index +'"> Query' + tab_index + ' </strong> <button type="button" class="btn btn-warning btn-xs" onclick="removeTab(' + tab_index + ');"><span class="glyphicon glyphicon-remove"></span></button></a></li>');
 
         //insert one query content(the input panel) into the tab content
         $('div#query_tab_content > div:last-child').after('\
@@ -77,6 +77,15 @@ function runQuery(tab_index)
     prepareResult(tab_index);
 
     var query_str = $('#query_text' + tab_index).val();
+    //modify tab name
+    var fromIndex = query_str.toLowerCase().indexOf("from");
+    var startIndex = fromIndex + 5;
+    if (fromIndex == -1)
+        startIndex = 0; 
+    var tabName = query_str.slice(startIndex, startIndex+8); 
+    tabName += "...";
+    $('#query_tab_name' + tab_index).html(tabName);
+
     var args = {'query': query_str, 'tab_index': tab_index};
 
     $.ajax({url: '/query', data: $.param(args), dataType: 'json', type: 'POST',
