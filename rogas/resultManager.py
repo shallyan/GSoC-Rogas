@@ -121,12 +121,12 @@ class GraphResult(object):
 
         #add selected nodes 
         for node_id in rank_nodes:
-            node = {'id': node_id, 'size': rank_nodes[node_id], 'color': 0, 'highlight': 1, 'opacity': 1.0}
+            node = {'id': node_id, 'size': rank_nodes[node_id], 'color': 0, 'highlight': 1, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
             self.graph_nodes.append(node) 
                 
         #add nodes around 
         for node_id in around_nodes:
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': 1.0}
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
             self.graph_nodes.append(node) 
         
     def _generateClusterGraphNodes(self, row_content, keep_nodes):
@@ -211,7 +211,7 @@ class GraphResult(object):
                 #keep nodes first
                 cluster_nodes_count = 0
                 for node_id, node_value in cluster_id2keep_nodes[cluster_id].iteritems():
-                    node = {'id': node_id, 'size': node_value, 'color': cluster_id, 'highlight': 1, 'opacity': 1.0}
+                    node = {'id': node_id, 'size': node_value, 'color': cluster_id, 'highlight': 1, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
                     self.graph_nodes.append(node)
                     cluster_nodes_count += 1
 
@@ -221,7 +221,7 @@ class GraphResult(object):
 
                     node_id = sorted_score_node_id_pair_lst[i][1]
                     if node_id not in cluster_id2keep_nodes[cluster_id]:
-                        node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': 1.0}
+                        node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
                         self.graph_nodes.append(node)
                         cluster_nodes_count += 1
 
@@ -229,7 +229,7 @@ class GraphResult(object):
             #keep all nodes 
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
                 for node_id in cluster_nodes:
-                    node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': 1.0}
+                    node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
                     if node_id in keep_nodes:
                         node['size'] = keep_nodes[node_id]
                     self.graph_nodes.append(node)
@@ -303,12 +303,12 @@ class GraphResult(object):
         #add nodes on the path
         for node_id in path_nodes_set:
             highlight = 1 if node_id in start_end_nodes_set else 0
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': highlight, 'opacity': 1.0}
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': highlight, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
             self.graph_nodes.append(node) 
                 
         #add nodes around the path
         for node_id in around_path_nodes_set:
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': config.UNHIGHLIGHT_OPACITY}
+            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': config.UNHIGHLIGHT_OPACITY, 'entity_info': self.node_entity_info[node_id]}
             self.graph_nodes.append(node) 
 
     def _generateGraphEdges(self, matGraphFile): 
@@ -342,10 +342,28 @@ class GraphResult(object):
 
         self.graph_edges = new_graph_edges
 
+    def _generateEntityInfo(self):
+        entity_result, id_field = queryConsole.readEntityTableInfo(self.graph_name)
+        node_id_index = 0
+        for index, column in enumerate(entity_result.column_list):
+            if str(column).strip().lower() == str(id_field).strip().lower():
+                node_id_index = index
+                break
+
+        self.node_columns = entity_result.column_list
+        self.node_entity_info = dict()
+        
+        for node_info in entity_result.row_content: 
+            node_id = str(node_info[node_id_index]).strip()
+            self.node_entity_info[node_id] = node_info 
+
     def generateGraph(self):
         #read graph edges from file
         graph_file = helper.getGraph(self.graph_name)
         self._generateGraphEdges(graph_file)
+
+        #read graph nodes entity information
+        self._generateEntityInfo()
 
         #read graph nodes 
         if self.graph_operator == 'rank':
@@ -368,7 +386,7 @@ class GraphResult(object):
     def asDict(self):
         return {'name': self.graph_name, 'operator': self.graph_operator, 
                 'graph_type': self.graph_type, 'nodes': self.graph_nodes,
-                'edges': self.graph_edges}
+                'edges': self.graph_edges, 'entity_columns': self.node_columns}
     
     def asReturnResult(self):
         return {'graph': self.asDict()}

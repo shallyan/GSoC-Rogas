@@ -19,3 +19,32 @@ def getGraph(graphName):
     else:
         raise RuntimeError, "No such graph!!"
 
+#word appears in the begin, end in string, or mid with spaces(\t\n\r\space) around 
+def findWordInString(word, sString):
+    searchBeginIndex = 0
+    searchEndIndex = len(sString)
+    while True:
+        wordIndex = sString.find(word, searchBeginIndex, searchEndIndex)
+        if wordIndex == -1:
+            return -1
+        
+        if (wordIndex > searchBeginIndex and not sString[wordIndex-1].isspace()) or (wordIndex + len(word) < searchEndIndex and not sString[wordIndex+len(word)].isspace()):
+            searchBeginIndex = wordIndex + len(word)
+        else:
+            return wordIndex
+
+def getAlphaNumSubString(word):
+    startIndex = 0
+    endIndex = 0  
+    for index in range(len(word)):
+        if word[index].isalnum():
+            startIndex = index
+            break
+
+    for index in range(len(word)):
+        realIndex = len(word) - 1 - index
+        if word[realIndex].isalnum():
+            endIndex = realIndex 
+            break
+
+    return  word[startIndex:endIndex+1]

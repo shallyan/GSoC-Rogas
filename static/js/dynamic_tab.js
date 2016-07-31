@@ -165,6 +165,8 @@ function querySuccess(response)
                     <div class="tab-pane fade" id="graph' + tab_index + '">';
 
             insert_html += '\
+                        <div id="graph_graph' + tab_index + '"></div>\
+                        <div id="graph_text' + tab_index + '"></div>\
                 </div>';
         }
 

@@ -6,7 +6,6 @@ The queryConsole is to read the query input, show query results and display erro
 import psycopg2
 import queryParser
 import matGraphProcessor
-import clusterExecutor as cExe
 import time
 import os
 from resultManager import QueryResult, GraphResult, TableResult, TableGraphResult, SingleResultManager
@@ -48,23 +47,15 @@ def execQuery(conn, cur, executeCommand):
         #print newExecuteCommand[:eIndex] + "graph"
 
         if "drop" in lowerCaseCommand:
+            matGraphProcessor.dropCreationInfo(graphName, conn, cur)
             queryResult.setType("string")
             queryResult.setContent("Drop Graph Done")
         else:
-            tableResult = readTable(graphName, "")
-            #write graph to file
-            tmpGraphDir = "/dev/shm/RG_Tmp_Graph/"
+            matGraphProcessor.analyseCreateInfo(executeCommand, graphName, graphType, conn, cur)
+
             createGraphName = 'crea_clu_' + graphName
-            with open(tmpGraphDir + createGraphName, 'w') as f:
-                for edge in tableResult.row_content:
-                    f.write(str(edge[0]) + '\t' + str(edge[1]) + os.linesep)
-
-            #keep cluster result in database
-            clusterCommands = [createGraphName, 'MC', graphType, [], '', createGraphName]
-            cExe.processCommand(clusterCommands, conn, cur, False)
-
             queryResult.setType('graph')
-            graphResult = GraphResult('all', graphType, createGraphName, createGraphName,'') 
+            graphResult = GraphResult('all', graphType, graphName, createGraphName, '') 
             graphResult.generateGraph()
             queryResult.setContent(graphResult)
     
@@ -167,3 +158,17 @@ def readTable(table_name, condition):
     SingleConnection.commit() 
     SingleConnection.rollback()
     return tableResult
+
+def readEntityTableInfo(graph_name):
+    cur = SingleConnection.cursor()
+    cur.execute("select relationName, keyField from my_entity_connection where graphName = '%s';" % (graph_name))
+    SingleConnection.commit()
+    row = cur.fetchone()
+    #the graph may be created before the entity connection is implemented
+    if row is None:
+        raise RuntimeError, "Can't find graph:" + graph_name + " entity info items"
+
+    entity_table = str(row[0])
+    id_field = str(row[1])
+
+    return readTable(entity_table, ""), id_field

@@ -5,6 +5,7 @@ function drawGraph(tab_index, graph_content)
 
     var graph_nodes = graph_content.nodes;
     var graph_edges = graph_content.edges;
+    var node_info_fields = graph_content.entity_columns;
 
     var height = 400;
     var width = $("#rg_result" + tab_index).width();
@@ -12,7 +13,7 @@ function drawGraph(tab_index, graph_content)
     var max_zoom = 2.0;
     var max_color = 0;
 
-    var svg = d3.select("#graph" +  tab_index)
+    var svg = d3.select("#graph_graph" +  tab_index)
                 .append("svg")
                 .attr("height", height)
                 .attr("width", width)
@@ -126,6 +127,24 @@ function drawGraph(tab_index, graph_content)
                         })
                         .on("dblclick", function(node){
                             node.fixed = false;
+                        })
+                        .on("mouseover", function(node){
+                            var node_entity_info_str = ""
+                            for (var index = 0; index < node_info_fields.length; ++index)
+                            {
+                                d3.select("#graph_text" +  tab_index)
+                                  .append("b")
+                                  .text(node_info_fields[index] + ": ")
+                                  .style("color", "blue")
+                                  .append("b")
+                                  .text(node.entity_info[index] + "    ")
+                                  .style("color", "black");
+                            }
+                        })
+                        .on("mouseout", function(node){
+                            d3.select("#graph_text" +  tab_index)
+                              .selectAll("b")
+                              .remove();
                         });
 
     var svg_texts = g.selectAll("text")
