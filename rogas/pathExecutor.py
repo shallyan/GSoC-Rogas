@@ -13,7 +13,6 @@ def nodesInShortestPath(graph, start_node, end_node):
         #V1//V2#
         pathList = findPaths(graph, start_node, end_node, 0)
     except (nx.exception.NetworkXError, nx.exception.NetworkXNoPath, KeyError) as reasons:
-        print 'NodeInShortestPath', reasons
         pathList = []
 
     return pathList[0] if len(pathList) > 0 else []
