@@ -129,6 +129,8 @@ function drawGraph(tab_index, graph_content)
                             node.fixed = false;
                         })
                         .on("mouseover", function(node){
+                            svg.style("cursor","hand");
+
                             var node_entity_info_str = ""
                             for (var index = 0; index < node_info_fields.length; ++index)
                             {
@@ -142,6 +144,8 @@ function drawGraph(tab_index, graph_content)
                             }
                         })
                         .on("mouseout", function(node){
+                            svg.style("cursor","move");
+
                             d3.select("#graph_text" +  tab_index)
                               .selectAll("b")
                               .remove();
