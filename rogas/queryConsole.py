@@ -10,6 +10,7 @@ import time
 import os
 from resultManager import QueryResult, GraphResult, TableResult, TableGraphResult, SingleResultManager
 import config
+import helper
 
 #this array is used to store the name of materialized graphs;
 mat_graph_cache = []
@@ -35,7 +36,17 @@ def execQuery(conn, cur, executeCommand):
 
         queryResult.setType("table_graph")
         tableResult = SingleResultManager.extractTableResultFromCursor(cur)
-        graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2], graphOperationInfo[3], graphOperationInfo[4]) 
+        #limit
+        conditionClause = graphOperationInfo[4]
+        if conditionClause == "":
+            firstSelectIndex = helper.findWordInString('select', lowerCaseCommand)
+            firstFromIndex = helper.findWordInString('from', lowerCaseCommand)
+            searchString = lowerCaseCommand[firstSelectIndex:firstFromIndex]
+            if helper.findWordInString('vertexid', searchString) != -1 or helper.findWordInString('clusterid', searchString) != -1 \
+               or helper.findWordInString('members', searchString) != -1 or helper.findWordInString('pathid', searchString) != -1 \
+               or helper.findWordInString('paths', searchString) != -1 or helper.findWordInString('*', searchString) != -1:
+                conditionClause = "limit " + str(tableResult.total_num)
+        graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2], graphOperationInfo[3], conditionClause) 
         graphResult.generateGraph()
         queryResult.setContent(TableGraphResult(tableResult, graphResult))
     

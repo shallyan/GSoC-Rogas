@@ -12,12 +12,14 @@ import helper
 import pathExecutor
 
 class TableResult(object):
-    def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, query_id=0):
+    def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, total_num=20, query_id=0):
         self.column_list = column_list
         self.row_content = row_content 
         self.is_end = is_end
         self.is_begin = is_begin
         self.query_id = query_id
+        #this field just for temp resolution of limit
+        self.total_num = total_num 
 
     def setQueryId(self, query_id):
         self.query_id = query_id
@@ -448,7 +450,7 @@ class ResultManager(object):
         is_end = 1 if cursor.rownumber == cursor.rowcount else 0
         is_begin = 1 if start_index == 0 else 0
 
-        return is_end, TableResult(column_list, rows_content, is_begin, is_end)
+        return is_end, TableResult(column_list, rows_content, is_begin, is_end, cursor.rowcount)
 
     def extractTableResultFromCursor(self, cursor, is_all=False):
         is_end, table_result = self._extractTableResult(cursor, 0, config.PAGE_MAX_NUM, is_all)
