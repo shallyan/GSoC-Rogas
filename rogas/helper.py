@@ -21,6 +21,9 @@ def getGraph(graphName):
 
 #word appears in the begin, end in string, or mid with spaces(\t\n\r\space) around 
 def findWordInString(word, sString):
+    def isWordBoundary(character):
+        return character.isspace() or character in [',', '(', ')', ';']
+
     searchBeginIndex = 0
     searchEndIndex = len(sString)
     while True:
@@ -28,7 +31,7 @@ def findWordInString(word, sString):
         if wordIndex == -1:
             return -1
         
-        if (wordIndex > searchBeginIndex and not sString[wordIndex-1].isspace()) or (wordIndex + len(word) < searchEndIndex and not sString[wordIndex+len(word)].isspace()):
+        if (wordIndex > searchBeginIndex and not isWordBoundary(sString[wordIndex-1])) or (wordIndex + len(word) < searchEndIndex and not isWordBoundary(sString[wordIndex+len(word)])):
             searchBeginIndex = wordIndex + len(word)
         else:
             return wordIndex
