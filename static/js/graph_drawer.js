@@ -103,7 +103,10 @@ function drawGraph(tab_index, graph_content)
                         .data(graph_nodes)
                         .enter()
                         .append("g")
-                        .call(drag);
+                        .call(drag)
+                        .on("mousedown", function(node){
+                            d3.event.stopPropagation();
+                        });
 
     var node_imgs = svg_nodes.append("circle")
                         .attr("r", function(node){
@@ -126,6 +129,7 @@ function drawGraph(tab_index, graph_content)
                             return color_scale(node.color % 20);
                         })
                         .on("dblclick", function(node){
+                            d3.event.stopPropagation();
                             node.fixed = false;
                         })
                         .on("mouseover", function(node){
@@ -166,10 +170,6 @@ function drawGraph(tab_index, graph_content)
                         .text(function(node){
                             return node.id;
                         });
-    
-    svg_nodes.on("mousedown", function(d){
-        d3.event.stopPropagation();
-    });
 
     zoom.on("zoom", function(){
         g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
