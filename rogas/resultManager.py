@@ -131,7 +131,14 @@ class GraphResult(object):
             node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
             self.graph_nodes.append(node) 
         
-    def _generateClusterGraphNodes(self, row_content, keep_nodes):
+    def _generateHighlightClusters(self, row_content): 
+        highlight_clusters = set()
+        for row in row_content:
+            cluster_id = str(row[0].strip())
+            highlight_clusters.add(cluster_id)
+        return highlight_clusters
+
+    def _generateClusterGraphNodes(self, row_content, highlight_clusters, keep_nodes):
         self.graph_nodes = []
         cluster_id2size = dict()
         cluster_id2nodes = dict()
@@ -180,6 +187,9 @@ class GraphResult(object):
             source_cluster_id = node_id2cluster_id[start_node]
             target_cluster_id = node_id2cluster_id[end_node]
 
+            if source_cluster_id not in highlight_clusters or target_cluster_id not in highlight_clusters:
+                edge['opacity'] = config.UNHIGHLIGHT_OPACITY
+
             #score each node if needed
             if source_cluster_id == target_cluster_id:
                 if need_scale_size:
@@ -213,7 +223,8 @@ class GraphResult(object):
                 #keep nodes first
                 cluster_nodes_count = 0
                 for node_id, node_value in cluster_id2keep_nodes[cluster_id].iteritems():
-                    node = {'id': node_id, 'size': node_value, 'color': cluster_id, 'highlight': 1, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
+                    node_opacity = config.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
+                    node = {'id': node_id, 'size': node_value, 'color': cluster_id, 'highlight': 1, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
                     self.graph_nodes.append(node)
                     cluster_nodes_count += 1
 
@@ -223,7 +234,8 @@ class GraphResult(object):
 
                     node_id = sorted_score_node_id_pair_lst[i][1]
                     if node_id not in cluster_id2keep_nodes[cluster_id]:
-                        node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
+                        node_opacity = config.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
+                        node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
                         self.graph_nodes.append(node)
                         cluster_nodes_count += 1
 
@@ -231,7 +243,8 @@ class GraphResult(object):
             #keep all nodes 
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
                 for node_id in cluster_nodes:
-                    node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
+                    node_opacity = config.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
+                    node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
                     if node_id in keep_nodes:
                         node['size'] = keep_nodes[node_id]
                     self.graph_nodes.append(node)
@@ -368,19 +381,19 @@ class GraphResult(object):
         self._generateEntityInfo()
 
         #read graph nodes 
+        query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
         if self.graph_operator == 'rank':
-            query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
             self._generateRankGraphNodes(query_result.row_content)
         elif self.graph_operator == 'path':
-            query_result = queryConsole.readTable(self.graph_op_result_name, self.graph_condition)
             self._generatePathGraphNodes(query_result.row_content)
+        elif self.graph_operator == 'cluster':
+                highlight_clusters = self._generateHighlightClusters(query_result.row_content)
+                #In fact, we only need readTable once if we can parse the condition: limit xx order by xx
+                cluster_result = queryConsole.readTable(self.graph_op_result_name, "")
+                self._generateClusterGraphNodes(cluster_result.row_content, highlight_clusters, dict())
         else:
-            query_result = queryConsole.readTable(self.graph_op_result_name, "")
-
-            if self.graph_operator == 'cluster':
-                self._generateClusterGraphNodes(query_result.row_content, {})
-            else:
-                self._generateClusterGraphNodes(query_result.row_content, {})
+            highlight_clusters = self._generateHighlightClusters(query_result.row_content)
+            self._generateClusterGraphNodes(query_result.row_content, highlight_clusters, dict())
 
         #filter edges by nodes
         self._filterEdgesByNodes()
