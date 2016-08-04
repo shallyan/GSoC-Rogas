@@ -4,6 +4,7 @@ The resultManager is to manage the query results
 @author: Yan Xiao
 '''
 
+from configManager import SingleConfigManager 
 import config
 import queryConsole
 import os
@@ -74,12 +75,12 @@ class GraphResult(object):
             if node_value > max_value:
                 max_value = node_value
 
-            if len(node_size_dict) > config.RANK_NODE_MAX_NUM:
+            if len(node_size_dict) > SingleConfigManager.RANK_NODE_MAX_NUM:
                 break
 
         #scale node value for visualizaiion 
         for node_id, node_value in node_size_dict.iteritems():
-            node_value = config.NODE_MIN_SIZE + int((node_value - min_value) * (config.NODE_MAX_SIZE - config.NODE_MIN_SIZE) / (0.001 + max_value - min_value))
+            node_value = SingleConfigManager.NODE_MIN_SIZE + int((node_value - min_value) * (SingleConfigManager.NODE_MAX_SIZE - SingleConfigManager.NODE_MIN_SIZE) / (0.001 + max_value - min_value))
             node_size_dict[node_id] = node_value
         
         return node_size_dict
@@ -128,7 +129,7 @@ class GraphResult(object):
                 
         #add nodes around 
         for node_id in around_nodes:
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
+            node = {'id': node_id, 'size': SingleConfigManager.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
             self.graph_nodes.append(node) 
         
     def _generateHighlightClusters(self, row_content): 
@@ -178,7 +179,7 @@ class GraphResult(object):
                 print 'data changes between graph creation and rank operation:', node_id
             
 
-        need_scale_size = all_nodes_num > config.GRAPH_NODE_MAX_NUM
+        need_scale_size = all_nodes_num > SingleConfigManager.GRAPH_NODE_MAX_NUM
 
         for edge in self.graph_edges:
             start_node = edge['source']
@@ -188,7 +189,7 @@ class GraphResult(object):
             target_cluster_id = node_id2cluster_id[end_node]
 
             if source_cluster_id not in highlight_clusters or target_cluster_id not in highlight_clusters:
-                edge['opacity'] = config.UNHIGHLIGHT_OPACITY
+                edge['opacity'] = SingleConfigManager.UNHIGHLIGHT_OPACITY
 
             #score each node if needed
             if source_cluster_id == target_cluster_id:
@@ -208,7 +209,7 @@ class GraphResult(object):
         if need_scale_size:
             #calculate the size of each cluster
             for cluster_id, cluster_size in cluster_id2size.items():
-                cluster_id2size[cluster_id] = max(cluster_size * config.GRAPH_NODE_MAX_NUM * 1.0 / all_nodes_num, 5)
+                cluster_id2size[cluster_id] = max(cluster_size * SingleConfigManager.GRAPH_NODE_MAX_NUM * 1.0 / all_nodes_num, 5)
 
             #keep high score nodes
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
@@ -223,7 +224,7 @@ class GraphResult(object):
                 #keep nodes first
                 cluster_nodes_count = 0
                 for node_id, node_value in cluster_id2keep_nodes[cluster_id].iteritems():
-                    node_opacity = config.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
+                    node_opacity = SingleConfigManager.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
                     node = {'id': node_id, 'size': node_value, 'color': cluster_id, 'highlight': 1, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
                     self.graph_nodes.append(node)
                     cluster_nodes_count += 1
@@ -234,8 +235,8 @@ class GraphResult(object):
 
                     node_id = sorted_score_node_id_pair_lst[i][1]
                     if node_id not in cluster_id2keep_nodes[cluster_id]:
-                        node_opacity = config.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
-                        node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
+                        node_opacity = SingleConfigManager.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
+                        node = {'id': node_id, 'size': SingleConfigManager.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
                         self.graph_nodes.append(node)
                         cluster_nodes_count += 1
 
@@ -243,8 +244,8 @@ class GraphResult(object):
             #keep all nodes 
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
                 for node_id in cluster_nodes:
-                    node_opacity = config.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
-                    node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
+                    node_opacity = SingleConfigManager.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
+                    node = {'id': node_id, 'size': SingleConfigManager.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
                     if node_id in keep_nodes:
                         node['size'] = keep_nodes[node_id]
                     self.graph_nodes.append(node)
@@ -266,7 +267,7 @@ class GraphResult(object):
 
         #find nodes in the path
         for index, row in enumerate(row_content):
-            if index >= config.PATH_MAX_NUM:
+            if index >= SingleConfigManager.PATH_MAX_NUM:
                 break
 
             #PathId, Length, Paths 
@@ -295,7 +296,7 @@ class GraphResult(object):
         #find nodes around the path
         around_path_nodes_set = set()
         for edge in self.graph_edges:
-            edge['opacity'] = config.UNHIGHLIGHT_OPACITY 
+            edge['opacity'] = SingleConfigManager.UNHIGHLIGHT_OPACITY 
             start_node = edge['source']
             end_node = edge['target']
             if start_node in path_nodes_set and end_node in path_nodes_set:
@@ -318,12 +319,12 @@ class GraphResult(object):
         #add nodes on the path
         for node_id in path_nodes_set:
             highlight = 1 if node_id in start_end_nodes_set else 0
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': highlight, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
+            node = {'id': node_id, 'size': SingleConfigManager.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': highlight, 'opacity': 1.0, 'entity_info': self.node_entity_info[node_id]}
             self.graph_nodes.append(node) 
                 
         #add nodes around the path
         for node_id in around_path_nodes_set:
-            node = {'id': node_id, 'size': config.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': config.UNHIGHLIGHT_OPACITY, 'entity_info': self.node_entity_info[node_id]}
+            node = {'id': node_id, 'size': SingleConfigManager.NODE_DEFAULT_SIZE, 'color': 0, 'highlight': 0, 'opacity': SingleConfigManager.UNHIGHLIGHT_OPACITY, 'entity_info': self.node_entity_info[node_id]}
             self.graph_nodes.append(node) 
 
     def _generateGraphEdges(self, matGraphFile): 
@@ -342,7 +343,7 @@ class GraphResult(object):
         edge_max_weight = max(edge_weights) + 1.0 
         edge_min_weight = min(edge_weights) 
         for format_edge, weight in graph_edges_dict.iteritems():
-            width = config.EDGE_MIN_WIDTH + ((weight- edge_min_weight) * (config.EDGE_MAX_WIDTH - config.EDGE_MIN_WIDTH) / (edge_max_weight- edge_min_weight))
+            width = SingleConfigManager.EDGE_MIN_WIDTH + ((weight- edge_min_weight) * (SingleConfigManager.EDGE_MAX_WIDTH - SingleConfigManager.EDGE_MIN_WIDTH) / (edge_max_weight- edge_min_weight))
             edge = {'source': format_edge[0], 'target': format_edge[1],
                     'length': 100 + random.random() * 50, 'width': width, 'color': 0, 'opacity': 1.0}
             self.graph_edges.append(edge)
