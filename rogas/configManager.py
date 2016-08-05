@@ -45,3 +45,6 @@ class ConfigManager(object):
                 self.reInitWithDict(config_dict, False)
 
 SingleConfigManager = ConfigManager()
+
+def updateConfig(config_dict):
+    SingleConfigManager.reInitWithDict(config_dict)

@@ -3,6 +3,8 @@
 from tornado import web
 import config
 from rogas import queryConsole
+from rogas import configManager
+import json
 
 class BaseHandler(web.RequestHandler):
     """ base of handlers
@@ -43,3 +45,12 @@ class LoadResultHandler(BaseHandler):
             actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
 
         self.write(actResult)
+
+class ConfigHandler(BaseHandler):
+    def post(self):
+        try:
+            config_dict_str = self.get_argument('config')
+            config_dict = json.loads(config_dict_str)
+            configManager.updateConfig(config_dict)
+        except Exception as reason: 
+            pass
