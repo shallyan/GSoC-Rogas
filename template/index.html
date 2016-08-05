@@ -52,12 +52,7 @@
                     <a href="#" role="button" data-toggle="modal" data-target="#about_modal" > <strong> About </strong> </a>
                 </li>
                 <li> 
-                    <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <strong> Setting </strong> <span class="caret"></span> </a>
-                    <ul id="setting" class="dropdown-menu">
-                        <li><a href="#">maxnum1</a></li>
-                        <li><a href="#">maxnum2</a></li>
-                        <li><a href="#">maxnum3</a></li>
-                    </ul>
+                    <a href="#" role="button" data-toggle="modal" data-target="#setting_modal" > <strong> Setting</strong> </a>
                 </li>
                 <li>
                     <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <strong> History </strong> <span class="caret"></span> </a>
@@ -73,7 +68,7 @@
         </div>
     </nav>
 
-    <!-- Modal -->
+    <!-- About Modal -->
     <div class="modal fade" id="about_modal" tabindex="-1" role="dialog" >
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -88,6 +83,27 @@
                 </div>
                 <div class="modal-footer">
                     <p>Rogas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setting Modal -->
+    <div class="modal fade" id="setting_modal" tabindex="-1" role="dialog" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">About</h4>
+                </div>
+                <div class="modal-body">
+                    <p>This is Rogas Project</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick=updateConfig() >Save changes</button>
                 </div>
             </div>
         </div>

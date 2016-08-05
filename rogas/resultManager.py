@@ -179,7 +179,7 @@ class GraphResult(object):
                 print 'data changes between graph creation and rank operation:', node_id
             
 
-        need_scale_size = all_nodes_num > SingleConfigManager.GRAPH_NODE_MAX_NUM
+        need_scale_size = all_nodes_num > SingleConfigManager.CLUSTER_NODE_MAX_NUM
 
         for edge in self.graph_edges:
             start_node = edge['source']
@@ -209,7 +209,7 @@ class GraphResult(object):
         if need_scale_size:
             #calculate the size of each cluster
             for cluster_id, cluster_size in cluster_id2size.items():
-                cluster_id2size[cluster_id] = max(cluster_size * SingleConfigManager.GRAPH_NODE_MAX_NUM * 1.0 / all_nodes_num, 5)
+                cluster_id2size[cluster_id] = max(cluster_size * SingleConfigManager.CLUSTER_NODE_MAX_NUM * 1.0 / all_nodes_num, 5)
 
             #keep high score nodes
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():

@@ -13,8 +13,8 @@ class ConfigManager(object):
     def __init__(self):
         self.load()
 
-    def _reInit(self, graph_node_max_num=400, rank_node_max_num=20, path_max_num=20, node_min_size=15, node_max_size=30, node_default_size=10, edge_min_width=2, edge_max_width=10, unhighlight_opacity=0.2):
-        self.GRAPH_NODE_MAX_NUM = graph_node_max_num
+    def _reInit(self, cluster_node_max_num=400, rank_node_max_num=20, path_max_num=20, node_min_size=15, node_max_size=30, node_default_size=10, edge_min_width=2, edge_max_width=10, unhighlight_opacity=0.2):
+        self.CLUSTER_NODE_MAX_NUM = cluster_node_max_num
         self.RANK_NODE_MAX_NUM = rank_node_max_num
         self.PATH_MAX_NUM = path_max_num
         self.NODE_MIN_SIZE = node_min_size
