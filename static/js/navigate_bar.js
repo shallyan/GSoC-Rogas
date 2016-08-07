@@ -1,14 +1,14 @@
 function updateConfig()
 {
-    var cluster_node_max_num = $('#cluster_node_max_num').val();
-    var ranked_node_max_num = $('#ranked_node_max_num').val();
-    var path_max_num = $('#path_max_num').val();
-    var node_min_size = $('#node_min_size').val();
-    var node_max_size = $('#node_max_size').val();
-    var node_default_size = $('#node_default_size').val();
-    var edge_min_width = $('#edge_min_width').val();
-    var edge_max_width = $('#edge_max_width').val();
-    var unhighlight_opacity = $('#unhighlight_opacity').val();
+    var cluster_node_max_num = Number($('#cluster_node_max_num').val());
+    var ranked_node_max_num = Number($('#ranked_node_max_num').val());
+    var path_max_num = Number($('#path_max_num').val());
+    var node_min_size = Number($('#node_min_size').val());
+    var node_max_size = Number($('#node_max_size').val());
+    var node_default_size = Number($('#node_default_size').val());
+    var edge_min_width = Number($('#edge_min_width').val());
+    var edge_max_width = Number($('#edge_max_width').val());
+    var unhighlight_opacity = Number($('#unhighlight_opacity').val());
 
     if (cluster_node_max_num < 0 || ranked_node_max_num < 0 || path_max_num < 0 || node_min_size < 0 || node_max_size < 0 ||
         node_default_size < 0 || edge_min_width < 0 || edge_max_width < 0 || unhighlight_opacity < 0)
