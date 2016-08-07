@@ -76,7 +76,7 @@
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="myModalLabel">About</h4>
+                    <h4 class="modal-title">About</h4>
                 </div>
                 <div class="modal-body">
                     <p>This is Rogas Project</p>
@@ -96,10 +96,76 @@
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="myModalLabel">About</h4>
+                    <h4 class="modal-title">Setting</h4>
                 </div>
                 <div class="modal-body">
-                    <p>This is Rogas Project</p>
+
+                <form class="form-horizontal">
+                    <div class="form-group has-success">
+                        <label for="cluster_node_max_num" class="col-sm-3 control-label">ClusterNodeMaxNum</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="cluster_node_max_num" 
+                                   value={{ setting_dict['CLUSTER_NODE_MAX_NUM'] }}>
+                        </div>
+
+                        <label for="ranked_node_max_num" class="col-sm-3 control-label">RankedNodeMaxNum</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="ranked_node_max_num"
+                                   value={{ setting_dict['RANK_NODE_MAX_NUM'] }}>
+                        </div>
+                    </div>
+
+                    <div class="form-group has-success">
+                        <label for="path_max_num" class="col-sm-3 control-label">PathMaxNum</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="path_max_num"
+                                   value={{ setting_dict['PATH_MAX_NUM'] }}>
+                        </div>
+
+                        <label for="node_min_size" class="col-sm-3 control-label">NodeMinSize</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="node_min_size"
+                                   value={{ setting_dict['NODE_MIN_SIZE'] }}>
+                        </div>
+                    </div>
+
+                    <div class="form-group has-success">
+                        <label for="node_max_size" class="col-sm-3 control-label">NodeMaxSize</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="node_max_size"
+                                   value={{ setting_dict['NODE_MAX_SIZE'] }}>
+                        </div>
+
+                        <label for="node_default_size" class="col-sm-3 control-label">NodeDefaultSize</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="node_default_size"
+                                   value={{ setting_dict['NODE_DEFAULT_SIZE'] }}>
+                        </div>
+                    </div>
+
+                    <div class="form-group has-success">
+                        <label for="edge_min_width" class="col-sm-3 control-label">EdgeMinWidth</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="edge_min_width"
+                                   value={{ setting_dict['EDGE_MIN_WIDTH'] }}>
+                        </div>
+
+                        <label for="edge_max_width" class="col-sm-3 control-label">EdgeMaxWidth</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="edge_max_width"
+                                   value={{ setting_dict['EDGE_MAX_WIDTH'] }}>
+                        </div>
+                    </div>
+
+                    <div class="form-group has-success">
+                        <label for="unhighlight_opacity" class="col-sm-3 control-label">UnhighlightOpacity</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="unhighlight_opacity"
+                                   value={{ setting_dict['UNHIGHLIGHT_OPACITY'] }}>
+                        </div>
+                    </div>
+                </form>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

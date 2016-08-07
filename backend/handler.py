@@ -13,7 +13,7 @@ class BaseHandler(web.RequestHandler):
 
 class MainHandler(BaseHandler):
     def get(self):
-        self.render(config.MAIN_HTML)
+        self.render(config.MAIN_HTML, setting_dict=configManager.getConfigDict())
 
 class QueryHandler(BaseHandler):
     def post(self):
@@ -54,3 +54,5 @@ class ConfigHandler(BaseHandler):
             configManager.updateConfig(config_dict)
         except Exception as reason: 
             pass
+        self.write({"state": "done"})
+

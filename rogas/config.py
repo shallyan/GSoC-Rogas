@@ -14,4 +14,4 @@ DB_PORT = 5432
 PAGE_MAX_NUM = 10 
 
 #whether graph_tool support openmp
-IS_GRAPH_TOOL_OPENMP = True 
+IS_GRAPH_TOOL_OPENMP = False 
