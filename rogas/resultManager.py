@@ -11,6 +11,7 @@ import os
 import random
 import helper
 import pathExecutor
+import networkx as nx
 
 class TableResult(object):
     def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, total_num=20, query_id=0):
@@ -85,6 +86,20 @@ class GraphResult(object):
         
         return node_size_dict
 
+    def _createGraphFromEdges(self):
+        if self.graph_type == "digraph":
+            Graph = nx.DiGraph()
+        elif self.graph_type == "ungraph":
+            Graph = nx.Graph()
+            
+        edge_list = []
+        for edge in self.graph_edges:
+            format_edge = int(edge['source']), int(edge['target'])
+            edge_list.append(format_edge)
+            
+        Graph.add_edges_from(edge_list)
+        return Graph
+
     def  _generateRankGraphNodes(self, row_content):
         self.graph_nodes = []
 
@@ -102,8 +117,7 @@ class GraphResult(object):
                 around_nodes.add(start_node)
 
         #find shortest path between two rank nodes
-        graph_file = helper.getGraph(self.graph_name)
-        graph = pathExecutor.createGraph(graph_file, self.graph_type) 
+        graph = self._createGraphFromEdges() 
         
         format_edges_set = set()
         for start_node in rank_nodes:
