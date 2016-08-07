@@ -117,7 +117,7 @@ class GraphResult(object):
                 around_nodes.add(start_node)
 
         #find shortest path between two rank nodes
-        graph = self._createGraphFromEdges(self.graph_edges) 
+        graph = self._createGraphFromEdges(self.graph_edges, self.graph_type) 
         
         format_edges_set = set()
         for start_node in rank_nodes:
