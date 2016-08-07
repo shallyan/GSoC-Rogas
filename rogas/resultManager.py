@@ -86,14 +86,14 @@ class GraphResult(object):
         
         return node_size_dict
 
-    def _createGraphFromEdges(self):
-        if self.graph_type == "digraph":
+    def _createGraphFromEdges(self, graph_edges, graph_type):
+        if graph_type == "digraph":
             Graph = nx.DiGraph()
-        elif self.graph_type == "ungraph":
+        elif graph_type == "ungraph":
             Graph = nx.Graph()
             
         edge_list = []
-        for edge in self.graph_edges:
+        for edge in graph_edges:
             format_edge = int(edge['source']), int(edge['target'])
             edge_list.append(format_edge)
             
@@ -117,7 +117,7 @@ class GraphResult(object):
                 around_nodes.add(start_node)
 
         #find shortest path between two rank nodes
-        graph = self._createGraphFromEdges() 
+        graph = self._createGraphFromEdges(self.graph_edges) 
         
         format_edges_set = set()
         for start_node in rank_nodes:
@@ -157,6 +157,7 @@ class GraphResult(object):
         self.graph_nodes = []
         cluster_id2size = dict()
         cluster_id2nodes = dict()
+        cluster_id2edges = dict()
         cluster_id2keep_nodes = dict()
         node_id2cluster_id = dict()
         node_id2score = dict()
@@ -189,9 +190,6 @@ class GraphResult(object):
             if node_id in node_id2cluster_id:
                 cluster_id = node_id2cluster_id[node_id]
                 cluster_id2keep_nodes[cluster_id][node_id] = node_value
-            else:
-                print 'data changes between graph creation and rank operation:', node_id
-            
 
         need_scale_size = all_nodes_num > SingleConfigManager.CLUSTER_NODE_MAX_NUM
 
@@ -210,6 +208,9 @@ class GraphResult(object):
                 if need_scale_size:
                     node_id2score[start_node] += 1.0
                     node_id2score[end_node] += 1.0
+                    if source_cluster_id not in cluster_id2edges:
+                        cluster_id2edges[source_cluster_id] = [] 
+                    cluster_id2edges[source_cluster_id].append(edge)
             else:
                 edge['length'] = 700 + random.random()*100
                 if need_scale_size:
@@ -234,8 +235,18 @@ class GraphResult(object):
                 #sort node by score
                 sorted_score_node_id_pair_lst = sorted(score_node_id_pair_lst)
 
+                #find max component   
+                #use ungraph to find connected components
+                cluster_graph = self._createGraphFromEdges(cluster_id2edges[cluster_id], "ungraph")
+                components = nx.connected_components(cluster_graph)
+                max_component_nodes = sorted(components, key=lambda x: len(x), reverse=True)[0]
+                max_component_nodes = [str(node_id).strip() for node_id in max_component_nodes]
+                #get component_node, score pair
+                max_component_node_score_pair_lst = [(node_id2score[node_id], node_id) for node_id in max_component_nodes]
+                sorted_component_node_score_pair_lst = sorted(max_component_node_score_pair_lst)
+
                 #get  max_nodes_num from sorted_score_node_id_pair_lst and keep nodes
-                #keep nodes first
+                #1) keep nodes first
                 cluster_nodes_count = 0
                 for node_id, node_value in cluster_id2keep_nodes[cluster_id].iteritems():
                     node_opacity = SingleConfigManager.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
@@ -243,12 +254,15 @@ class GraphResult(object):
                     self.graph_nodes.append(node)
                     cluster_nodes_count += 1
 
-                for i in range(len(sorted_score_node_id_pair_lst)):
+                #2) max component nodes second, and other nodes last 
+                added_node_id_set = set(cluster_id2keep_nodes[cluster_id])
+                merged_score_nodes_lst = sorted_component_node_score_pair_lst + sorted_score_node_id_pair_lst
+                for i in range(len(merged_score_nodes_lst)):
                     if cluster_nodes_count > max_nodes_num:
                         break
 
-                    node_id = sorted_score_node_id_pair_lst[i][1]
-                    if node_id not in cluster_id2keep_nodes[cluster_id]:
+                    node_id = merged_score_nodes_lst[i][1]
+                    if node_id not in added_node_id_set:
                         node_opacity = SingleConfigManager.UNHIGHLIGHT_OPACITY if cluster_id not in highlight_clusters else 1.0
                         node = {'id': node_id, 'size': SingleConfigManager.NODE_DEFAULT_SIZE, 'color': cluster_id, 'highlight': 0, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
                         self.graph_nodes.append(node)
