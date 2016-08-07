@@ -19,19 +19,19 @@ function updateConfig()
 
     if (unhighlight_opacity > 1.0)
     {
-        alert("UNHIGHLIGHT_OPACITY can't be larger than 1.0");
+        alert("UnhighlightOpacity can't be larger than 1.0");
         return;
     }
 
     if (node_min_size >= node_max_size)
     {
-        alert("NODE_MIN_SIZE must be smaller than NODE_MAX_SIZE");
+        alert("NodeMinSize must be smaller than NodeMaxSize");
         return;
     }
 
     if (edge_min_width >= edge_max_width)
     {
-        alert("EDGE_MIN_WIDTH must be smaller than EDGE_MAX_WIDTH");
+        alert("EdgeMinWidth must be smaller than EdgeMaxWidth");
         return;
     }
 
