@@ -128,7 +128,7 @@ function querySuccess(response)
 
         //relation tab
         insert_html = '\
-            <!-- result tab: Relations/Graphs -->\
+            <!-- result tab: Relation/Graph -->\
             <div class="panel panel-info" id="rg_result' + tab_index + '">\
                 <div class="panel-heading">\
                     <ul id="result_tab" class="nav nav-pills">';
@@ -138,7 +138,7 @@ function querySuccess(response)
             insert_html += '\
                         <li class="active">\
                             <a href="#relation' + tab_index + '" data-toggle="tab">\
-                                <span class="glyphicon glyphicon-th"></span> <strong> Relations </strong>\
+                                <span class="glyphicon glyphicon-th"></span> <strong> Relation </strong>\
                             </a>\
                         </li>';
         }
@@ -154,7 +154,7 @@ function querySuccess(response)
 
             insert_html += '\
                             <a href="#graph' + tab_index + '" data-toggle="tab">\
-                                <span class="glyphicon glyphicon-picture"></span> <strong> Graphs </strong>\
+                                <span class="glyphicon glyphicon-picture"></span> <strong> Graph </strong>\
                             </a>\
                         </li>';
         }
