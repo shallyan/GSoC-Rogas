@@ -430,7 +430,9 @@ class GraphResult(object):
     def asDict(self):
         return {'name': self.graph_name, 'operator': self.graph_operator, 
                 'graph_type': self.graph_type, 'nodes': self.graph_nodes,
-                'edges': self.graph_edges, 'entity_columns': self.node_columns}
+                'edges': self.graph_edges, 'entity_columns': self.node_columns,
+                'display_node_id': SingleConfigManager.DISPLAY_NODE_ID
+                }
     
     def asReturnResult(self):
         return {'graph': self.asDict()}

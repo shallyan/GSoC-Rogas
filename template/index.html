@@ -164,6 +164,17 @@
                                    value={{ setting_dict['UNHIGHLIGHT_OPACITY'] }}>
                         </div>
                     </div>
+
+                    <div class="form-group has-success">
+                        <label for="dispaly_node_id" class="col-sm-3 control-label">DisplayNodeID</label>
+                        <div class="col-sm-3">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="dispaly_node_id" {% if setting_dict['DISPLAY_NODE_ID'] %} checked="checked" {% end %}>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </form>
 
                 </div>

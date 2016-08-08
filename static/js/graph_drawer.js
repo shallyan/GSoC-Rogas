@@ -1,7 +1,8 @@
 function drawGraph(tab_index, graph_content)
 {
     var graph_type = graph_content.graph_type;
-    var isDirectedGraph = (graph_type == "digraph");
+    var is_directed_graph = (graph_type == "digraph");
+    var is_display_node_id = graph_content.display_node_id;
 
     var graph_nodes = graph_content.nodes;
     var graph_edges = graph_content.edges;
@@ -55,7 +56,7 @@ function drawGraph(tab_index, graph_content)
     //force the first color is blue so that node is in blue by default in every graph
     color_scale(0);
 
-    if (isDirectedGraph)
+    if (is_directed_graph)
     {
         svg.append("defs")
            .selectAll("marker")
@@ -155,21 +156,24 @@ function drawGraph(tab_index, graph_content)
                               .remove();
                         });
 
-    var svg_texts = g.selectAll("text")
-                        .data(graph_nodes)
-                        .enter()
-                        .append("text")
-                        .style("fill", "black")
-                        .style("opacity", function(node){
-                            return node.opacity;
-                        })
-                        .attr("dx", function(node){
-                            return node.size;
-                        })
-                        .attr("dy", 5)
-                        .text(function(node){
-                            return node.id;
-                        });
+    if (is_display_node_id)
+    {
+        var svg_texts = g.selectAll("text")
+                            .data(graph_nodes)
+                            .enter()
+                            .append("text")
+                            .style("fill", "black")
+                            .style("opacity", function(node){
+                                return node.opacity;
+                            })
+                            .attr("dx", function(node){
+                                return node.size;
+                            })
+                            .attr("dy", 5)
+                            .text(function(node){
+                                return node.id;
+                            });
+    }
 
     zoom.on("zoom", function(){
         g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -179,7 +183,10 @@ function drawGraph(tab_index, graph_content)
 
     force.on("tick", function(){
         svg_nodes.attr("transform", function(node) { return "translate(" + node.x + "," + node.y + ")"; });
-        svg_texts.attr("transform", function(text) { return "translate(" + text.x + "," + text.y + ")"; });
+        if (is_display_node_id)
+        {
+            svg_texts.attr("transform", function(text) { return "translate(" + text.x + "," + text.y + ")"; });
+        }
         svg_edges.attr("d",function(edge){
             var dx = edge.target.x - edge.source.x;
             var dy = edge.target.y - edge.source.y;
@@ -187,7 +194,7 @@ function drawGraph(tab_index, graph_content)
 
             var offset_x = 0; 
             var offset_y = 0;
-            if (dr > 5 && isDirectedGraph)
+            if (dr > 5 && is_directed_graph)
             {
                 offset_x = dx * edge.target.size / dr;
                 offset_y = dy * edge.target.size / dr;

@@ -9,6 +9,7 @@ function updateConfig()
     var edge_min_width = Number($('#edge_min_width').val());
     var edge_max_width = Number($('#edge_max_width').val());
     var unhighlight_opacity = Number($('#unhighlight_opacity').val());
+    var dispaly_node_id = $('#dispaly_node_id').is(':checked');
 
     if (cluster_node_max_num < 0 || ranked_node_max_num < 0 || path_max_num < 0 || node_min_size < 0 || node_max_size < 0 ||
         node_default_size < 0 || edge_min_width < 0 || edge_max_width < 0 || unhighlight_opacity < 0)
@@ -43,7 +44,8 @@ function updateConfig()
                      'NODE_DEFAULT_SIZE': node_default_size,
                      'EDGE_MIN_WIDTH': edge_min_width,
                      'EDGE_MAX_WIDTH': edge_max_width,
-                     'UNHIGHLIGHT_OPACITY': unhighlight_opacity
+                     'UNHIGHLIGHT_OPACITY': unhighlight_opacity,
+                     'DISPLAY_NODE_ID': dispaly_node_id
                     };
     var config_str = JSON.stringify(config_obj);
     var args = {'config': config_str};
