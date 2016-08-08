@@ -221,8 +221,9 @@ function querySuccess(response)
 
     $('#query_form' + tab_index).after(insert_html);
 
-    $('#rg_result' + tab_index).hide();
-    $('#rg_result' + tab_index).fadeIn();
+    $('#rg_result' + tab_index).hide(0, function(){
+        $('#rg_result' + tab_index).fadeIn();
+    });
 
     if (isHaveGraph)
     {
@@ -317,6 +318,7 @@ function queryNewPageSuccess(response)
     $('#table_head' + tab_index).after(table_body_html);
     $('#div_table' + tab_index).after(pager_html);
 
-    $('#table_body' + tab_index).hide();
-    $('#table_body' + tab_index).fadeIn();
+    $('#table_body' + tab_index).hide(0, function(){
+        $('#table_body' + tab_index).fadeIn();
+    });
 }
