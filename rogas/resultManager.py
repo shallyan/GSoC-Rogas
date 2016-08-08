@@ -229,7 +229,7 @@ class GraphResult(object):
             #keep high score nodes
             for cluster_id, cluster_nodes in cluster_id2nodes.iteritems():
                 #get nodes num
-                max_nodes_num = min(len(cluster_nodes), cluster_id2size[cluster_id])
+                max_nodes_num = int(min(len(cluster_nodes), cluster_id2size[cluster_id]))
 
                 score_node_id_pair_lst = [(node_id2score[node_id], node_id) for node_id in cluster_nodes]
                 #sort node by score
@@ -242,8 +242,8 @@ class GraphResult(object):
                 max_component_nodes = sorted(components, key=lambda x: len(x), reverse=True)[0]
                 max_component_nodes = [str(node_id).strip() for node_id in max_component_nodes]
                 #get component_node, score pair
-                max_component_node_score_pair_lst = [(node_id2score[node_id], node_id) for node_id in max_component_nodes]
-                sorted_component_node_score_pair_lst = sorted(max_component_node_score_pair_lst)
+                max_component_score_node_pair_lst = [(node_id2score[node_id], node_id) for node_id in max_component_nodes]
+                sorted_component_score_node_pair_lst = sorted(max_component_score_node_pair_lst)
 
                 #get  max_nodes_num from sorted_score_node_id_pair_lst and keep nodes
                 #1) keep nodes first
@@ -254,9 +254,21 @@ class GraphResult(object):
                     self.graph_nodes.append(node)
                     cluster_nodes_count += 1
 
-                #2) max component nodes second, and other nodes last 
                 added_node_id_set = set(cluster_id2keep_nodes[cluster_id])
-                merged_score_nodes_lst = sorted_component_node_score_pair_lst + sorted_score_node_id_pair_lst
+
+                #2) max component nodes second, but at most half nodes picked from max component
+                picked_max_component_num = (max_nodes_num - cluster_nodes_count) / 2
+                picked_max_component_score_node_lst = sorted_component_score_node_pair_lst[:picked_max_component_num] 
+                picked_max_component_nodes = [score_node[1] for score_node in picked_max_component_score_node_lst]
+
+                #3) pick neighbors of max component nodes
+                picked_max_component_neighbor_nodes = set()
+                for node_id in picked_max_component_nodes:
+                    node_neighbors_lst = cluster_graph.neighbors(int(node_id)) 
+                    picked_max_component_neighbor_nodes.update(node_neighbors_lst)
+                picked_max_component_neighbor_score_node_lst = [(node_id2score[str(node_id)], str(node_id)) for node_id in picked_max_component_neighbor_nodes]
+
+                merged_score_nodes_lst = picked_max_component_score_node_lst + picked_max_component_neighbor_score_node_lst + sorted_score_node_id_pair_lst
                 for i in range(len(merged_score_nodes_lst)):
                     if cluster_nodes_count > max_nodes_num:
                         break
