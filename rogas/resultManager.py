@@ -282,6 +282,7 @@ class GraphResult(object):
                         node = {'id': node_id, 'size': SingleConfigManager.NODE_DEFAULT_SIZE, 'color': cluster_id, 
                                 'highlight': 0, 'opacity': node_opacity, 'entity_info': self.node_entity_info[node_id]}
                         self.graph_nodes.append(node)
+                        added_node_id_set.add(node_id)
                         cluster_nodes_count += 1
 
         else:
