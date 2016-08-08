@@ -195,6 +195,9 @@ class GraphResult(object):
 
         need_scale_size = all_nodes_num > SingleConfigManager.CLUSTER_NODE_MAX_NUM
 
+        if need_scale_size:
+            total_graph = self._createGraphFromEdges(self.graph_edges, self.graph_type)
+
         for edge in self.graph_edges:
             start_node = edge['source']
             end_node = edge['target']
@@ -208,18 +211,18 @@ class GraphResult(object):
             #score each node if needed
             if source_cluster_id == target_cluster_id:
                 if need_scale_size:
-                    node_id2score[start_node] += 1.0
-                    node_id2score[end_node] += 1.0
+                    node_id2score[start_node] += 1.0 + total_graph.degree(int(end_node))
+                    node_id2score[end_node] += 1.0 + total_graph.degree(int(start_node))
                     if source_cluster_id not in cluster_id2edges:
                         cluster_id2edges[source_cluster_id] = [] 
                     cluster_id2edges[source_cluster_id].append(edge)
             else:
                 edge['length'] = 700 + random.random()*100
                 if need_scale_size:
-                    node_id2score[start_node] += node_id_cluster_id2score_reatio[start_node][target_cluster_id]
+                    node_id2score[start_node] += node_id_cluster_id2score_reatio[start_node][target_cluster_id] + total_graph.degree(int(end_node))
                     node_id_cluster_id2score_reatio[start_node][target_cluster_id] *= 0.8
 
-                    node_id2score[end_node] += node_id_cluster_id2score_reatio[end_node][source_cluster_id]
+                    node_id2score[end_node] += node_id_cluster_id2score_reatio[end_node][source_cluster_id] + total_graph.degree(int(start_node))
                     node_id_cluster_id2score_reatio[end_node][source_cluster_id] *= 0.8
 
 
