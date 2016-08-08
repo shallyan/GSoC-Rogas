@@ -209,22 +209,27 @@ class GraphResult(object):
                 edge['opacity'] = SingleConfigManager.UNHIGHLIGHT_OPACITY
 
             #score each node if needed
+            #1) different score between inner-cluster edge and cluster-cluster edge
             if source_cluster_id == target_cluster_id:
                 if need_scale_size:
-                    node_id2score[start_node] += 1.0 + total_graph.degree(int(end_node))
-                    node_id2score[end_node] += 1.0 + total_graph.degree(int(start_node))
+                    node_id2score[start_node] += 1.0
+                    node_id2score[end_node] += 1.0
                     if source_cluster_id not in cluster_id2edges:
                         cluster_id2edges[source_cluster_id] = [] 
                     cluster_id2edges[source_cluster_id].append(edge)
             else:
-                edge['length'] = 700 + random.random()*100
+                edge['length'] = 700 + random.random() * 100
                 if need_scale_size:
-                    node_id2score[start_node] += node_id_cluster_id2score_reatio[start_node][target_cluster_id] + total_graph.degree(int(end_node))
+                    node_id2score[start_node] += node_id_cluster_id2score_reatio[start_node][target_cluster_id]
                     node_id_cluster_id2score_reatio[start_node][target_cluster_id] *= 0.8
 
-                    node_id2score[end_node] += node_id_cluster_id2score_reatio[end_node][source_cluster_id] + total_graph.degree(int(start_node))
+                    node_id2score[end_node] += node_id_cluster_id2score_reatio[end_node][source_cluster_id]
                     node_id_cluster_id2score_reatio[end_node][source_cluster_id] *= 0.8
 
+            #2) consider target node's degree
+            if need_scale_size:
+                node_id2score[start_node] += 0.2 * total_graph.degree(int(end_node))
+                node_id2score[end_node] += 0.2 * total_graph.degree(int(start_node))
 
         if need_scale_size:
             #calculate the size of each cluster
