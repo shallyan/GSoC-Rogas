@@ -1,4 +1,7 @@
 $(function () {
+    //bind ctrl+enter shortcut on the first tab
+    $('#query_text0').on('keydown', '', 0, queryTextShortcutKey);
+
     var tab_index = 1;
     $('#query_add a[role="button"]').on('click', function () { 
         //insert one query at the last of query tabs
@@ -23,9 +26,22 @@ $(function () {
                 </div>\
             </div>');
 
+        $('#query_text' + tab_index).on('keydown', '', tab_index, queryTextShortcutKey);
+
         tab_index += 1;
     });
 });
+
+function queryTextShortcutKey(event)
+{
+    if (event.ctrlKey && event.keyCode == 13)
+    {
+        var tab_index = event.data;
+        var is_btn_disabled = $('#query_btn' + tab_index).is(':disabled');
+        if (!is_btn_disabled)
+            $('#query_btn' + tab_index).click();
+    }
+}
 
 function initExpanding(tab_index)
 {
