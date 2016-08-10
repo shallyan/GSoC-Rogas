@@ -98,38 +98,52 @@
                                    value={{ setting_dict['CLUSTER_NODE_MAX_NUM'] }}>
                         </div>
 
+                        <label for="cluster_component_ratio" class="col-sm-3 control-label">ClusterComponentRat</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="cluster_component_ratio"
+                                   value={{ setting_dict['CLUSTER_COMPONENT_RATIO'] }}>
+                        </div>
+                    </div>
+
+                    <div class="form-group has-success">
                         <label for="ranked_node_max_num" class="col-sm-3 control-label">RankedNodeMaxNum</label>
                         <div class="col-sm-3">
                             <input type="number" class="form-control text-center" id="ranked_node_max_num"
                                    value={{ setting_dict['RANK_NODE_MAX_NUM'] }}>
                         </div>
-                    </div>
 
-                    <div class="form-group has-success">
                         <label for="path_max_num" class="col-sm-3 control-label">PathMaxNum</label>
                         <div class="col-sm-3">
                             <input type="number" class="form-control text-center" id="path_max_num"
                                    value={{ setting_dict['PATH_MAX_NUM'] }}>
                         </div>
+                    </div>
 
+                    <div class="form-group has-success">
                         <label for="node_min_size" class="col-sm-3 control-label">NodeMinSize</label>
                         <div class="col-sm-3">
                             <input type="number" class="form-control text-center" id="node_min_size"
                                    value={{ setting_dict['NODE_MIN_SIZE'] }}>
                         </div>
-                    </div>
 
-                    <div class="form-group has-success">
                         <label for="node_max_size" class="col-sm-3 control-label">NodeMaxSize</label>
                         <div class="col-sm-3">
                             <input type="number" class="form-control text-center" id="node_max_size"
                                    value={{ setting_dict['NODE_MAX_SIZE'] }}>
                         </div>
+                    </div>
 
+                    <div class="form-group has-success">
                         <label for="node_default_size" class="col-sm-3 control-label">NodeDefaultSize</label>
                         <div class="col-sm-3">
                             <input type="number" class="form-control text-center" id="node_default_size"
                                    value={{ setting_dict['NODE_DEFAULT_SIZE'] }}>
+                        </div>
+
+                        <label for="unhighlight_opacity" class="col-sm-3 control-label">UnhighlightOpacity</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control text-center" id="unhighlight_opacity"
+                                   value={{ setting_dict['UNHIGHLIGHT_OPACITY'] }}>
                         </div>
                     </div>
 
@@ -144,14 +158,6 @@
                         <div class="col-sm-3">
                             <input type="number" class="form-control text-center" id="edge_max_width"
                                    value={{ setting_dict['EDGE_MAX_WIDTH'] }}>
-                        </div>
-                    </div>
-
-                    <div class="form-group has-success">
-                        <label for="unhighlight_opacity" class="col-sm-3 control-label">UnhighlightOpacity</label>
-                        <div class="col-sm-3">
-                            <input type="number" class="form-control text-center" id="unhighlight_opacity"
-                                   value={{ setting_dict['UNHIGHLIGHT_OPACITY'] }}>
                         </div>
                     </div>
 

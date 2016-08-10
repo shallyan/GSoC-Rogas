@@ -269,7 +269,7 @@ class GraphResult(object):
                     sorted_component_score_node_pair_lst = sorted(max_component_score_node_pair_lst)
 
                     #2) max component nodes second, but at most half nodes picked from max component
-                    picked_max_component_num = (max_nodes_num - cluster_nodes_count) / 2
+                    picked_max_component_num = int((max_nodes_num - cluster_nodes_count) * SingleConfigManager.CLUSTER_COMPONENT_RATIO)
                     picked_max_component_score_node_lst = sorted_component_score_node_pair_lst[:picked_max_component_num] 
                     picked_max_component_nodes = [score_node[1] for score_node in picked_max_component_score_node_lst]
 

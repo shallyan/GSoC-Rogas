@@ -14,8 +14,9 @@ class ConfigManager(object):
         self.config_dict = dict()
         self.load()
 
-    def defaultInit(self, cluster_node_max_num=800, rank_node_max_num=20, path_max_num=20, node_min_size=15, node_max_size=30, node_default_size=10, edge_min_width=2, edge_max_width=10, unhighlight_opacity=0.2, display_node_id=True):
+    def defaultInit(self, cluster_node_max_num=800, cluster_component_ratio=0.5, rank_node_max_num=20, path_max_num=20, node_min_size=15, node_max_size=30, node_default_size=10, edge_min_width=2, edge_max_width=10, unhighlight_opacity=0.2, display_node_id=True):
         self.config_dict['CLUSTER_NODE_MAX_NUM'] = cluster_node_max_num
+        self.config_dict['CLUSTER_COMPONENT_RATIO'] = cluster_component_ratio
         self.config_dict['RANK_NODE_MAX_NUM'] = rank_node_max_num
         self.config_dict['PATH_MAX_NUM'] = path_max_num
         self.config_dict['NODE_MIN_SIZE'] = node_min_size

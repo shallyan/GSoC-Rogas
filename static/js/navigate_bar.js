@@ -1,6 +1,7 @@
 function updateConfig()
 {
     var cluster_node_max_num = Number($('#cluster_node_max_num').val());
+    var cluster_component_ratio = Number($('#cluster_component_ratio').val());
     var ranked_node_max_num = Number($('#ranked_node_max_num').val());
     var path_max_num = Number($('#path_max_num').val());
     var node_min_size = Number($('#node_min_size').val());
@@ -11,8 +12,8 @@ function updateConfig()
     var unhighlight_opacity = Number($('#unhighlight_opacity').val());
     var dispaly_node_id = $('#dispaly_node_id').is(':checked');
 
-    if (cluster_node_max_num < 0 || ranked_node_max_num < 0 || path_max_num < 0 || node_min_size < 0 || node_max_size < 0 ||
-        node_default_size < 0 || edge_min_width < 0 || edge_max_width < 0 || unhighlight_opacity < 0)
+    if (cluster_node_max_num < 0 || cluster_component_ratio < 0 || ranked_node_max_num < 0 || path_max_num < 0 || node_min_size < 0 || node_max_size < 0 
+        || node_default_size < 0 || edge_min_width < 0 || edge_max_width < 0 || unhighlight_opacity < 0)
     {
         alert("Parameters can't be negative");
         return;
@@ -21,6 +22,12 @@ function updateConfig()
     if (unhighlight_opacity > 1.0)
     {
         alert("UnhighlightOpacity can't be larger than 1.0");
+        return;
+    }
+
+    if (cluster_component_ratio > 1.0)
+    {
+        alert("ClusterComponentRatio can't be larger than 1.0");
         return;
     }
 
@@ -37,6 +44,7 @@ function updateConfig()
     }
 
     var config_obj= {'CLUSTER_NODE_MAX_NUM': cluster_node_max_num,
+                     'CLUSTER_COMPONENT_RATIO': cluster_component_ratio,
                      'RANK_NODE_MAX_NUM': ranked_node_max_num,
                      'PATH_MAX_NUM': path_max_num,
                      'NODE_MIN_SIZE': node_min_size,
