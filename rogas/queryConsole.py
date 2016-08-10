@@ -10,6 +10,7 @@ import time
 import os
 from resultManager import QueryResult, GraphResult, TableResult, TableGraphResult, SingleResultManager
 import config
+from configManager import SingleConfigManager 
 import helper
 
 #this array is used to store the name of materialized graphs;
@@ -34,21 +35,25 @@ def execQuery(conn, cur, executeCommand):
         cur.execute(newExecuteCommand[:]) #remove the first space
         #print "newExecuteCommand: ", newExecuteCommand
 
-        queryResult.setType("table_graph")
         tableResult = SingleResultManager.extractTableResultFromCursor(cur)
-        #limit
-        conditionClause = graphOperationInfo[4]
-        if conditionClause == "":
-            firstSelectIndex = helper.findWordInString('select', lowerCaseCommand)
-            firstFromIndex = helper.findWordInString('from', lowerCaseCommand)
-            searchString = lowerCaseCommand[firstSelectIndex:firstFromIndex]
-            if helper.findWordInString('vertexid', searchString) != -1 or helper.findWordInString('clusterid', searchString) != -1 \
-               or helper.findWordInString('members', searchString) != -1 or helper.findWordInString('pathid', searchString) != -1 \
-               or helper.findWordInString('paths', searchString) != -1 or helper.findWordInString('*', searchString) != -1:
-                conditionClause = "limit " + str(tableResult.total_num)
-        graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2], graphOperationInfo[3], conditionClause) 
-        graphResult.generateGraph()
-        queryResult.setContent(TableGraphResult(tableResult, graphResult))
+        if SingleConfigManager.DO_VISUALIZATION:
+            queryResult.setType("table_graph")
+            #limit
+            conditionClause = graphOperationInfo[4]
+            if conditionClause == "":
+                firstSelectIndex = helper.findWordInString('select', lowerCaseCommand)
+                firstFromIndex = helper.findWordInString('from', lowerCaseCommand)
+                searchString = lowerCaseCommand[firstSelectIndex:firstFromIndex]
+                if helper.findWordInString('vertexid', searchString) != -1 or helper.findWordInString('clusterid', searchString) != -1 \
+                   or helper.findWordInString('members', searchString) != -1 or helper.findWordInString('pathid', searchString) != -1 \
+                   or helper.findWordInString('paths', searchString) != -1 or helper.findWordInString('*', searchString) != -1:
+                    conditionClause = "limit " + str(tableResult.total_num)
+            graphResult = GraphResult(graphOperationInfo[0], graphOperationInfo[1], graphOperationInfo[2], graphOperationInfo[3], conditionClause) 
+            graphResult.generateGraph()
+            queryResult.setContent(TableGraphResult(tableResult, graphResult))
+        else:
+            queryResult.setType("table")
+            queryResult.setContent(tableResult)
     
     #query about creating or dropping a materialised graph    
     elif ("create" in lowerCaseCommand[:7] or "drop" in lowerCaseCommand[:5]) and ("ungraph" in lowerCaseCommand or "digraph" in lowerCaseCommand):
@@ -64,11 +69,15 @@ def execQuery(conn, cur, executeCommand):
         else:
             matGraphProcessor.analyseCreateInfo(executeCommand, graphName, graphType, conn, cur)
 
-            createGraphName = 'crea_clu_' + graphName
-            queryResult.setType('graph')
-            graphResult = GraphResult('all', graphType, graphName, createGraphName, '') 
-            graphResult.generateGraph()
-            queryResult.setContent(graphResult)
+            if SingleConfigManager.DO_VISUALIZATION:
+                createGraphName = 'crea_clu_' + graphName
+                queryResult.setType('graph')
+                graphResult = GraphResult('all', graphType, graphName, createGraphName, '') 
+                graphResult.generateGraph()
+                queryResult.setContent(graphResult)
+            else:
+                queryResult.setType("string")
+                queryResult.setContent("Create Graph Done")
     
     elif ("refresh" in lowerCaseCommand[:8]):
         if  ("ungraph" in lowerCaseCommand) or  ("digraph" in lowerCaseCommand):
@@ -91,8 +100,6 @@ def execQuery(conn, cur, executeCommand):
             except Exception as reason:
                 conn.commit()
                 cur.close()
-            
-
             
     #normal relational query without any graph functions
     else:
