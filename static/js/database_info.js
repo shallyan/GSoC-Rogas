@@ -28,7 +28,23 @@ function addLabel(event)
     }
 }
 
-function removeLabel(label) {
+function removeLabel(label) 
+{
     label.parentNode.remove();
     return false;
+}
+
+function relationCoreInfo()
+{
+    var expand_relation_core = ($('#relation_core_info').attr('class') == 'collapsed');
+    if (expand_relation_core)
+    {
+        $('#query_add a[role="button"]').click();
+        $('ul#query_tab li:eq(-2) a').click();
+    }
+}
+
+function graphViewInfo()
+{
+    var expand_relation_core = ($('#graph_view_info').attr('class') == 'collapsed');
 }

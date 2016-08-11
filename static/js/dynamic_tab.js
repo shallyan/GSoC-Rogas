@@ -28,6 +28,9 @@ $(function () {
 
         $('#query_text' + tab_index).on('keydown', '', tab_index, queryTextShortcutKey);
 
+        //focus on new tab
+        $('ul#query_tab li:eq(-2) a').click();
+
         tab_index += 1;
     });
 });
