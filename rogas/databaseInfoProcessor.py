@@ -15,7 +15,6 @@ def getRelationCoreInfo():
     infoString = pipe.read()
     inputStream = StringIO.StringIO(infoString)
     relationCoreLines = inputStream.readlines()
-    print relationCoreLines
     
     queryResult = QueryResult()
     if len(relationCoreLines) < 2:
@@ -32,5 +31,19 @@ def getRelationCoreInfo():
             oneRowContent = [str(col).strip() for col in relationCoreLines[index].split('|')]
             rowsContent.append(oneRowContent)
         queryResult.setContent(TableResult(tableHeaderLst, rowsContent))
+
+    return queryResult
+
+def getGraphicalViewInfo():
+    from queryConsole import readTable
+    queryResult = QueryResult()
+
+    tableResult = readTable("my_matgraphs", "");
+    if tableResult.total_num == 0:
+        queryResult.setType("string")
+        queryResult.setContent("Empty graphical view information")
+    else:
+        queryResult.setType("table")
+        queryResult.setContent(tableResult)
 
     return queryResult

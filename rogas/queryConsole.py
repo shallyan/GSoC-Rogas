@@ -194,3 +194,6 @@ def readEntityTableInfo(graph_name):
 
 def getRelationCoreInfo():
     return databaseInfoProcessor.getRelationCoreInfo()
+
+def getGraphicalViewInfo():
+    return databaseInfoProcessor.getGraphicalViewInfo()

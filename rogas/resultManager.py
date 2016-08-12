@@ -14,13 +14,12 @@ import pathExecutor
 import networkx as nx
 
 class TableResult(object):
-    def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, total_num=20, query_id=0):
+    def __init__(self, column_list=None, row_content=None, is_begin=1, is_end=1, total_num=0, query_id=0):
         self.column_list = column_list
         self.row_content = row_content 
         self.is_end = is_end
         self.is_begin = is_begin
         self.query_id = query_id
-        #this field just for temp resolution of limit
         self.total_num = total_num 
 
     def setQueryId(self, query_id):

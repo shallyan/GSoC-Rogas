@@ -37,19 +37,25 @@ function removeLabel(label)
     return false;
 }
 
+function addDatabaseInfoTab()
+{
+    //add one new tab
+    $('#query_add a[role="button"]').click();
+    //focus on the new tab
+    var tab_id_str = $('ul#query_tab li:eq(-2)').attr('id');
+    var tab_index = tab_id_str.slice(5);
+    return tab_index;
+}
+
 function relationCoreInfo()
 {
     var expand_relation_core = ($('#relation_core_info').attr('class') == 'collapsed');
     if (expand_relation_core)
     {
-        //add one new tab
-        $('#query_add a[role="button"]').click();
-        //focus on the new tab
-        tab_id_str = $('ul#query_tab li:eq(-2)').attr('id');
-        tab_index = tab_id_str.slice(5);
+        var tab_index = addDatabaseInfoTab();
 
         //clear query input textarea and buttion
-        $('#query_form' + tab_index).html('<div class="alert alert-info text-center" role="alert">Relation Core Information</div>');
+        $('#query_form' + tab_index).html('<div class="alert alert-info text-center" role="alert"> <strong> Relation Core Information </strong> </div>');
 
         //query tab name
         $('#query_tab_name' + tab_index).html("Relation...");
@@ -66,5 +72,23 @@ function relationCoreInfo()
 
 function graphViewInfo()
 {
-    var expand_relation_core = ($('#graph_view_info').attr('class') == 'collapsed');
+    var expand_graph_core = ($('#graph_view_info').attr('class') == 'collapsed');
+    if (expand_graph_core)
+    {
+        var tab_index = addDatabaseInfoTab();
+
+        //clear query input textarea and buttion
+        $('#query_form' + tab_index).html('<div class="alert alert-info text-center" role="alert"> <strong> Graphical View Information </strong> </div>');
+
+        //query tab name
+        $('#query_tab_name' + tab_index).html("Graphical...");
+
+        //add loading progress
+        addLoadingAnimation(tab_index);
+
+        var args = {'tab_index': tab_index};
+        $.ajax({url: '/get_graphical_view_info', data: $.param(args), dataType: 'json', type: 'POST',
+            success: querySuccess, error: queryError
+        });
+    }
 }
