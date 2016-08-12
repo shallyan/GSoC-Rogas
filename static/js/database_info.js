@@ -27,7 +27,7 @@ function addLabel(event)
     {
         $('#' + info_type + '_message').remove(); 
 
-        $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').before('<button type="button" class="btn btn-default btn-xs" > ' + table_name + ' <a onclick="removeLabel(this);"> <span class="glyphicon glyphicon-remove-sign"></span></a>');
+        $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').before('<button type="button" class="btn btn-default btn-xs" onclick="relationTableInfo(' + "'" + table_name + "'" + ');"> ' + table_name + ' <a onclick="removeLabel(this);"> <span class="glyphicon glyphicon-remove-sign"></span></a>');
     }
 }
 
@@ -35,6 +35,25 @@ function removeLabel(label)
 {
     label.parentNode.remove();
     return false;
+}
+
+function relationTableInfo(table_name)
+{
+    var tab_index = addDatabaseInfoTab();
+    //clear query input textarea and buttion
+    $('#query_form' + tab_index).html('<div class="alert alert-info text-center" role="alert"> <strong> Relation Table-' + table_name + ' Information </strong> </div>');
+
+    //query tab name
+    $('#query_tab_name' + tab_index).html(table_name.slice(0, 8) + "...");
+
+    //add loading progress
+    addLoadingAnimation(tab_index);
+
+    var args = {'tab_index': tab_index, 'table_name': table_name};
+
+    $.ajax({url: '/get_relation_table_info', data: $.param(args), dataType: 'json', type: 'POST',
+        success: querySuccess, error: queryError
+    });
 }
 
 function addDatabaseInfoTab()

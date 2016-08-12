@@ -86,3 +86,32 @@ class GraphicalViewInfoHandler(BaseHandler):
             actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
 
         self.write(actResult)
+
+class RelationTableInfoHandler(BaseHandler):
+    def post(self):
+        actResult = dict() 
+        tab_index = 0
+        try:
+            tab_index = self.get_argument('tab_index')
+            table_name = self.get_argument('table_name')
+            queryResult = queryConsole.getRelationTableInfo(table_name)
+            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
+        except Exception as reason: 
+            actResult['tab_index'] = tab_index 
+            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+
+        self.write(actResult)
+
+class GraphicalGraphInfoHandler(BaseHandler):
+    def post(self):
+        actResult = dict() 
+        tab_index = 0
+        try:
+            tab_index = self.get_argument('tab_index')
+            queryResult = queryConsole.getGraphicalGraphInfo()
+            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
+        except Exception as reason: 
+            actResult['tab_index'] = tab_index 
+            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+
+        self.write(actResult)

@@ -197,3 +197,9 @@ def getRelationCoreInfo():
 
 def getGraphicalViewInfo():
     return databaseInfoProcessor.getGraphicalViewInfo()
+
+def getRelationTableInfo(table_name):
+    return databaseInfoProcessor.getRelationTableInfo(table_name)
+
+def getGraphicalGraphInfo():
+    return databaseInfoProcessor.getGraphicalGraphInfo()
