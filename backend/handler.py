@@ -10,7 +10,18 @@ import json
 class BaseHandler(web.RequestHandler):
     """ base of handlers
     """
-    pass
+    def _processRequest(self, func): 
+        actResult = dict() 
+        tab_index = 0
+        try:
+            tab_index = self.get_argument('tab_index')
+            queryResult = func(self)
+            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
+        except Exception as reason: 
+            actResult['tab_index'] = tab_index 
+            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+
+        self.write(actResult)
 
 class MainHandler(BaseHandler):
     def get(self):
@@ -18,36 +29,20 @@ class MainHandler(BaseHandler):
 
 class QueryHandler(BaseHandler):
     def post(self):
-        actResult = dict() 
-        tab_index = 0
-        try:
+        def _process(self):
             query = self.get_argument('query')
-            tab_index = self.get_argument('tab_index')
+            return queryConsole.start(query)
 
-            queryResult = queryConsole.start(query)
-            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
-        except Exception as reason: 
-            actResult['tab_index'] = tab_index 
-            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
-            
-        self.write(actResult)
+        self._processRequest(_process)
 
 class LoadResultHandler(BaseHandler):
     def post(self):
-        actResult = dict() 
-        tab_index = 0
-        try:
+        def _process(self):
             query_id = int(self.get_argument('query_id'))
             is_next = int(self.get_argument('is_next'))
-            tab_index = self.get_argument('tab_index')
+            return queryConsole.fetch(query_id, is_next)
 
-            queryResult = queryConsole.fetch(query_id, is_next)
-            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
-        except Exception as reason: 
-            actResult['tab_index'] = tab_index 
-            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
-
-        self.write(actResult)
+        self._processRequest(_process)
 
 class ConfigHandler(BaseHandler):
     def post(self):
@@ -61,57 +56,30 @@ class ConfigHandler(BaseHandler):
 
 class RelationCoreInfoHandler(BaseHandler):
     def post(self):
-        actResult = dict() 
-        tab_index = 0
-        try:
-            tab_index = self.get_argument('tab_index')
-            queryResult = queryConsole.getRelationCoreInfo()
-            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
-        except Exception as reason: 
-            actResult['tab_index'] = tab_index 
-            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+        def _process(self):
+            return queryConsole.getRelationCoreInfo()
 
-        self.write(actResult)
+        self._processRequest(_process)
 
 class GraphicalViewInfoHandler(BaseHandler):
     def post(self):
-        actResult = dict() 
-        tab_index = 0
-        try:
-            tab_index = self.get_argument('tab_index')
-            queryResult = queryConsole.getGraphicalViewInfo()
-            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
-        except Exception as reason: 
-            actResult['tab_index'] = tab_index 
-            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+        def _process(self):
+            return queryConsole.getGraphicalViewInfo()
 
-        self.write(actResult)
+        self._processRequest(_process)
 
 class RelationTableInfoHandler(BaseHandler):
     def post(self):
-        actResult = dict() 
-        tab_index = 0
-        try:
-            tab_index = self.get_argument('tab_index')
+        def _process(self):
             table_name = self.get_argument('table_name')
-            queryResult = queryConsole.getRelationTableInfo(table_name)
-            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
-        except Exception as reason: 
-            actResult['tab_index'] = tab_index 
-            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+            return queryConsole.getRelationTableInfo(table_name)
 
-        self.write(actResult)
+        self._processRequest(_process)
+
 
 class GraphicalGraphInfoHandler(BaseHandler):
     def post(self):
-        actResult = dict() 
-        tab_index = 0
-        try:
-            tab_index = self.get_argument('tab_index')
-            queryResult = queryConsole.getGraphicalGraphInfo()
-            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
-        except Exception as reason: 
-            actResult['tab_index'] = tab_index 
-            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+        def _process(self):
+            return queryConsole.getGraphicalGraphInfo()
 
-        self.write(actResult)
+        self._processRequest(_process)
