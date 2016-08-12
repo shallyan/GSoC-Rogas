@@ -214,7 +214,7 @@
                             <div id="label_relation_panel" class="panel-body">
                                 <hr id="relation_sep_line"></hr>
 
-                                <form class="form-horizontal">
+                                <form class="form-horizontal" onkeydown="return disableKeydownSubmit(event);">
                                     <div class="form-group has-info">
                                         <div class="input-group col-md-10 col-md-offset-1 input-group-sm">
                                             <input id="relation_input" type="text" class="form-control" placeholder="Table name"></input>
@@ -240,7 +240,7 @@
                             <div id="label_graph_panel" class="panel-body">
                                 <hr id="graph_sep_line"></hr>
 
-                                <form class="form-horizontal">
+                                <form class="form-horizontal" onkeydown="return disableKeydownSubmit(event);">
                                     <div class="form-group has-info">
                                         <div class="input-group col-md-10 col-md-offset-1 input-group-sm">
                                             <input id="graph_input" type="text" class="form-control" placeholder="Table name"></input>

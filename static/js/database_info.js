@@ -8,8 +8,27 @@ $(function () {
         $('#database_' + info_types[i]).collapse('hide');
 
         $('#label_' + info_types[i] + '_panel button#add_' + info_types[i] + '_label').on('click', '', info_types[i], addLabel);
+
+        $('#label_' + info_types[i] + '_panel #' + info_types[i] + '_input').on('keydown', '', info_types[i], keydownToAddLabel);
     }
 });
+
+function disableKeydownSubmit(event)
+{
+   if (event.keyCode == 13)
+   {
+       return false;
+   }
+   return true;
+}
+
+function keydownToAddLabel(event)
+{
+    if (event.keyCode == 13)
+    {
+       addLabel(event); 
+    }
+}
 
 function addLabel(event)
 {
