@@ -37,8 +37,7 @@ def getGraphCreationInfo(executeCommand):
 
 def generateEntityConnection(keyField, tableName):
     cmd = "psql -d " + config.DB + " -c '\d " + tableName + "'" 
-    pipe = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout
-    infoString = pipe.read()
+    infoString = helper.subprocessCmd(cmd)
     infoString = infoString.lower()
 
     foreignKeyIndex = infoString.find('"' + tableName + '_' + keyField + '_fkey"')

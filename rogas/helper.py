@@ -51,3 +51,9 @@ def getAlphaNumSubString(word):
             break
 
     return  word[startIndex:endIndex+1]
+
+def subprocessCmd(cmd):
+    import subprocess
+    pipe = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout
+    return pipe.read()
+
