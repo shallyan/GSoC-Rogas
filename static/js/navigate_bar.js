@@ -60,7 +60,7 @@ function updateConfig()
     var config_str = JSON.stringify(config_obj);
     var args = {'config': config_str};
 
-    $.ajax({url: '/config', data: $.param(args), dataType: 'json', type: 'POST',
+    $.ajax({url: '/update_config', data: $.param(args), dataType: 'json', type: 'POST',
         success: configSuccess, error: configError 
     });
 }

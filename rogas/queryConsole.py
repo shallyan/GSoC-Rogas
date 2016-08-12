@@ -12,6 +12,7 @@ from resultManager import QueryResult, GraphResult, TableResult, TableGraphResul
 import config
 from configManager import SingleConfigManager 
 import helper
+import databaseInfoProcessor
 
 #this array is used to store the name of materialized graphs;
 mat_graph_cache = []
@@ -190,3 +191,6 @@ def readEntityTableInfo(graph_name):
     id_field = str(row[1])
 
     return readTable(entity_table, ""), id_field
+
+def getRelationCoreInfo():
+    return databaseInfoProcessor.getRelationCoreInfo()

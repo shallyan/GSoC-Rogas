@@ -39,8 +39,25 @@ function relationCoreInfo()
     var expand_relation_core = ($('#relation_core_info').attr('class') == 'collapsed');
     if (expand_relation_core)
     {
+        //add one new tab
         $('#query_add a[role="button"]').click();
-        $('ul#query_tab li:eq(-2) a').click();
+        //focus on the new tab
+        tab_id_str = $('ul#query_tab li:eq(-2)').attr('id');
+        tab_index = tab_id_str.slice(5);
+
+        //clear query input textarea and buttion
+        $('#query_form' + tab_index).html('<div class="alert alert-info text-center" role="alert">Relation Core Information</div>');
+
+        //query tab name
+        $('#query_tab_name' + tab_index).html("Relation...");
+
+        //add loading progress
+        addLoadingAnimation(tab_index);
+
+        var args = {'tab_index': tab_index};
+        $.ajax({url: '/get_relation_core_info', data: $.param(args), dataType: 'json', type: 'POST',
+            success: querySuccess, error: queryError
+        });
     }
 }
 

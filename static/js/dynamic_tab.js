@@ -78,6 +78,11 @@ function prepareResult(tab_index)
         $('#rg_result' + tab_index).remove();
     }
 
+    addLoadingAnimation(tab_index);
+}
+
+function addLoadingAnimation(tab_index)
+{
     //add loading progress
     if ($('#query_progress' + tab_index).length == 0) {
         $('#query_form' + tab_index).after('\
@@ -107,7 +112,7 @@ function runQuery(tab_index)
 
     var args = {'query': query_str, 'tab_index': tab_index};
 
-    $.ajax({url: '/query', data: $.param(args), dataType: 'json', type: 'POST',
+    $.ajax({url: '/run_query', data: $.param(args), dataType: 'json', type: 'POST',
         success: querySuccess, error: queryError
     });
 }

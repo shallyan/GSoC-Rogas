@@ -4,6 +4,7 @@ from tornado import web
 import config
 from rogas import queryConsole
 from rogas import configManager
+from rogas.resultManager import QueryResult
 import json
 
 class BaseHandler(web.RequestHandler):
@@ -18,6 +19,7 @@ class MainHandler(BaseHandler):
 class QueryHandler(BaseHandler):
     def post(self):
         actResult = dict() 
+        tab_index = 0
         try:
             query = self.get_argument('query')
             tab_index = self.get_argument('tab_index')
@@ -25,7 +27,7 @@ class QueryHandler(BaseHandler):
             queryResult = queryConsole.start(query)
             actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
         except Exception as reason: 
-            actResult['tab_index'] = 0
+            actResult['tab_index'] = tab_index 
             actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
             
         self.write(actResult)
@@ -33,6 +35,7 @@ class QueryHandler(BaseHandler):
 class LoadResultHandler(BaseHandler):
     def post(self):
         actResult = dict() 
+        tab_index = 0
         try:
             query_id = int(self.get_argument('query_id'))
             is_next = int(self.get_argument('is_next'))
@@ -41,7 +44,7 @@ class LoadResultHandler(BaseHandler):
             queryResult = queryConsole.fetch(query_id, is_next)
             actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
         except Exception as reason: 
-            actResult['tab_index'] = 0
+            actResult['tab_index'] = tab_index 
             actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
 
         self.write(actResult)
@@ -53,6 +56,19 @@ class ConfigHandler(BaseHandler):
             config_dict = json.loads(config_dict_str)
             configManager.updateConfig(config_dict)
         except Exception as reason: 
-            pass
+            print 'update config error:', reason
         self.write({"state": "done"})
 
+class RelationCoreInfoHandler(BaseHandler):
+    def post(self):
+        actResult = dict() 
+        tab_index = 0
+        try:
+            tab_index = self.get_argument('tab_index')
+            queryResult = queryConsole.getRelationCoreInfo()
+            actResult = {'tab_index': tab_index, 'result': queryResult.asReturnResult()}
+        except Exception as reason: 
+            actResult['tab_index'] = tab_index 
+            actResult['result'] = QueryResult('string', str(reason)).asReturnResult()
+
+        self.write(actResult)
