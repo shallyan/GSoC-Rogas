@@ -5,7 +5,7 @@ $(function () {
 
     for (i = 0;i < info_types.length; i++)
     {
-        $('#database_' + info_types[i]).collapse('show');
+        $('#database_' + info_types[i]).collapse('hide');
 
         $('#label_' + info_types[i] + '_panel button#add_' + info_types[i] + '_label').on('click', '', info_types[i], addLabel);
     }
