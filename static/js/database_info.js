@@ -18,13 +18,16 @@ function addLabel(event)
 
     if (table_name.length == 0)
     {
-        $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').after('<div id="' + info_type + '_message" class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"> &times;</span></button><strong>Warning!</strong> Empty input! </div>');
+        if ($('#' + info_type + '_message').length == 0)
+        {
+            $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').after('<div id="' + info_type + '_message" class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"> &times;</span></button><strong>Warning!</strong> Empty input! </div>');
+        }
     }
     else
     {
         $('#' + info_type + '_message').remove(); 
 
-        $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').before('<button type="button" class="btn btn-default btn-xs" > ' + table_name + ' <a onclick="removeLabel(this);" href="#label"> <span class="glyphicon glyphicon-remove-sign"></span></a>');
+        $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').before('<button type="button" class="btn btn-default btn-xs" > ' + table_name + ' <a onclick="removeLabel(this);"> <span class="glyphicon glyphicon-remove-sign"></span></a>');
     }
 }
 
