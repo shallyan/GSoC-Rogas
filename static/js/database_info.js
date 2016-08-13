@@ -46,7 +46,7 @@ function addLabel(event)
     {
         $('#' + info_type + '_message').remove(); 
 
-        $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').before('<button type="button" class="btn btn-default btn-xs" onclick="' + info_type + 'StickerInfo(' + "'" + table_name + "'" + ');"> ' + table_name + ' <a onclick="removeLabel(this);"> <span class="glyphicon glyphicon-remove-sign"></span></a>');
+        $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').before('<button type="button" class="btn btn-default btn-xs" onclick="' + info_type + 'StickerInfo(' + "'" + table_name + "'" + ');"> ' + table_name + ' <a onclick="removeLabel(this); event.stopPropagation();"> <span class="glyphicon glyphicon-remove-sign"></span></a>');
     }
 }
 
