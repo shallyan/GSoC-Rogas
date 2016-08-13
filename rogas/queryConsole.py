@@ -183,6 +183,7 @@ def readEntityTableInfo(graph_name):
     cur.execute("select relationName, keyField from my_entity_connection where graphName = '%s';" % (graph_name))
     SingleConnection.commit()
     row = cur.fetchone()
+    cur.close()
     #the graph may be created before the entity connection is implemented
     if row is None:
         raise RuntimeError, "Can't find graph:" + graph_name + " entity info items"
@@ -201,5 +202,8 @@ def getGraphicalViewInfo():
 def getRelationTableInfo(table_name):
     return databaseInfoProcessor.getRelationTableInfo(table_name)
 
-def getGraphicalGraphInfo():
-    return databaseInfoProcessor.getGraphicalGraphInfo()
+def getGraphicalGraphInfo(graph_name):
+    cur = SingleConnection.cursor()
+    queryResult = databaseInfoProcessor.getGraphicalGraphInfo(graph_name, SingleConnection, cur)
+    cur.close()
+    return queryResult

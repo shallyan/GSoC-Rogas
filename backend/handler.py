@@ -76,10 +76,10 @@ class RelationTableInfoHandler(BaseHandler):
 
         self._processRequest(_process)
 
-
 class GraphicalGraphInfoHandler(BaseHandler):
     def post(self):
         def _process(self):
-            return queryConsole.getGraphicalGraphInfo()
+            graph_name = self.get_argument('graph_name')
+            return queryConsole.getGraphicalGraphInfo(graph_name)
 
         self._processRequest(_process)

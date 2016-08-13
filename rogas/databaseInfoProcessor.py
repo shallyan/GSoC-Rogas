@@ -8,6 +8,7 @@ import config
 import StringIO 
 from resultManager import QueryResult, TableResult
 import helper
+import snap
 
 #two cases: relation core entire info and relation table info
 def dealWithRelationCoreMetaInfo(cmd, isCore=True):
@@ -57,5 +58,39 @@ def getGraphicalViewInfo():
     else:
         queryResult.setType("table")
         queryResult.setContent(tableResult)
+
+    return queryResult
+
+def getGraphicalGraphInfo(graph_name, conn, cur):
+    queryResult = QueryResult()
+    
+    graph_name = graph_name.strip()
+    graph_path = helper.getGraph(graph_name) 
+
+    cur.execute("select graphType from my_matgraphs where matgraphname = '%s';" % (graph_name))
+    conn.commit()
+    one_row = cur.fetchone()
+    if one_row is None:
+        queryResult.setType("string") 
+        queryResult.setContent("Can't find this graph in my_matgraphs") 
+    else:
+        graph_type = one_row[0].strip()
+        snap_graph_type = snap.PNGraph if graph_type == "digraph" else snap.PUNGraph
+        graph = snap.LoadEdgeList(snap_graph_type, graph_path, 0, 1)
+        tmpGraphDir = "/dev/shm/RG_Tmp_Graph/"
+        tmpGraphInfoPath = tmpGraphDir + graph_name + '_info'
+        snap.PrintInfo(graph, "Graph Type", tmpGraphInfoPath)
+
+        tableHeaderLst = ['Attribute', 'Value']
+        rowsContent = []
+        with open(tmpGraphInfoPath) as f:
+            for line in f:
+                fields = line.split(':')
+                key = fields[0].strip()
+                value = fields[1].strip()
+                rowsContent.append([key, value])
+
+        queryResult.setType("table")
+        queryResult.setContent(TableResult(tableHeaderLst, rowsContent))
 
     return queryResult
