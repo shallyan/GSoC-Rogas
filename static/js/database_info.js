@@ -35,11 +35,11 @@ function addLabel(event)
     var info_type = event.data;
     var table_name = $('input#' + info_type + '_input').val();
 
-    if (table_name.length == 0)
+    if (table_name.length == 0 || table_name.length > 25)
     {
         if ($('#' + info_type + '_message').length == 0)
         {
-            $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').after('<div id="' + info_type + '_message" class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"> &times;</button><strong>Warning!</strong> Empty input! </div>');
+            $('#label_' + info_type + '_panel hr#' + info_type + '_sep_line').after('<div id="' + info_type + '_message" class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"> &times;</button><strong>Warning!</strong> Empty or too long input! </div>');
         }
     }
     else
