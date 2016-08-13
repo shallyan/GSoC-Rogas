@@ -79,6 +79,7 @@ def getGraphicalGraphInfo(graph_name, conn, cur):
         graph = snap.LoadEdgeList(snap_graph_type, graph_path, 0, 1)
         tmpGraphDir = "/dev/shm/RG_Tmp_Graph/"
         tmpGraphInfoPath = tmpGraphDir + graph_name + '_info'
+        #snap print info
         snap.PrintInfo(graph, "Graph Type", tmpGraphInfoPath)
 
         tableHeaderLst = ['Attribute', 'Value']
@@ -88,7 +89,16 @@ def getGraphicalGraphInfo(graph_name, conn, cur):
                 fields = line.split(':')
                 key = fields[0].strip()
                 value = fields[1].strip()
+                if key == "Graph Type":
+                    value = 'Directed' if graph_type == "digraph" else "Undirected"
                 rowsContent.append([key, value])
+
+        #definition
+        cur.execute("select definition from pg_matviews where matviewname = '%s';" % (graph_name))
+        conn.commit()
+        one_row = cur.fetchone()
+        if one_row is not None:
+            rowsContent.append(['Definition', one_row[0].strip()])
 
         queryResult.setType("table")
         queryResult.setContent(TableResult(tableHeaderLst, rowsContent))
