@@ -95,6 +95,11 @@ We also make use of Bootstrap(http://getbootstrap.com/), D3.js(https://d3js.org)
 - Set up your database information in rogas.config.py to connect to Postgresql
 - Python run.py
 
+## Future Work
+- 1) More informative name of query tabs
+- 2) Reduce the discreteness of large graph when max display node is small
+- 3) More distinguishability in PATH visualization when the number of paths increases
+
 ## More Information
 More details about the Rogas, please refer to 
 the thesis "Towards a Unified Framework for Network Analytics" collected in 
