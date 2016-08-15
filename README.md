@@ -25,6 +25,23 @@ My work is contained in this repository, not including the file in Rogas which i
 - Design and implement the visualisation of graph operations(CREATE, RANK, PATH, CLUSTER) 
 - Design and implement the backend server and modify Rogas for connecting to front-end
 
+## Algorithms for Large Graph Visualization
+### Graph Cluster Operation 
+- 1) Rescale the size of each cluster according to their proportion
+- 2) Score each node according to their inner-cluster edges, cluster-cluster edges and target node's degree
+- 3) Find max connected component in each cluster
+- 4) Get specified number nodes in max connected component from high score to low score
+- 5) Find neighbor nodes around the picked nodes
+
+### Graph Rank Operation 
+- 1) Get ranked nodes
+- 2) Find nodes on the shortest path between ranked nodes
+- 3) Find nodes around the ranked nodes
+
+### Graph Path Operation 
+- 1) Get nodes on the path
+- 2) Find nodes around the path
+
 ## Main Features
 - List information about entities and relationships of the relational core and materialised graphs
 - Database info panel can be customised by users
@@ -32,7 +49,7 @@ My work is contained in this repository, not including the file in Rogas which i
 - Query and its results as browser tabs
 - Asynchronous execution with loading animation
 - Support paged loading for large tables 
-- Support Graph creation, rank, path, cluster visualization
+- Support graph creation, rank, path, cluster visualization
 - Support large graph visualization
 - Support drag, doubleclick, zoom in/out operations and so on 
 - Support relation - graph data mapping
