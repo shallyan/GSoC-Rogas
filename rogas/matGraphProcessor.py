@@ -50,7 +50,6 @@ def generateEntityConnection(keyField, tableName):
     return entityIdField, entityTableName
 
 def dropCreationInfo(graphName, conn, cur):
-    cur.execute("drop table crea_clu_" + graphName)
     cur.execute("delete from my_entity_connection where graphName = %s" % ("'" + graphName + "'"))
     conn.commit()
 
@@ -76,9 +75,9 @@ def analyseCreateInfo(executeCommand, graphName, graphType, conn, cur):
         for edge in tableResult.row_content:
             f.write(str(edge[0]) + '\t' + str(edge[1]) + os.linesep)
 
-    #keep cluster result in database
+    #keep cluster result in database tmp table, which will be deleted automatically when cursor is closed
     clusterCommands = [graphName, 'MC', graphType, [], '', createGraphName]
-    cExe.processCommand(clusterCommands, conn, cur, False)
+    cExe.processCommand(clusterCommands, conn, cur, True)
 
 #operates the my_matgraphs catalog and returns the rewritten query to PostgreSQL for execution
 def processCommand(executeCommand, conn ,cur):
