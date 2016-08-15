@@ -339,14 +339,10 @@ class GraphResult(object):
                     one_path_edge = self._formatPathEdge(path_node_ids[node_id_index-1], node_id)
                     if one_path_edge not in path_edges2path_ids:
                         path_edges2path_ids[one_path_edge] = set()
-                    path_edges2path_ids[one_path_edge].add(2**path_id)
+                    path_edges2path_ids[one_path_edge].add(path_id)
                 
                 path_nodes_set.add(node_id)
 
-        #edge default color: 0
-        exist_color_map = dict()
-        exist_color_map[0] = 0
-        
         #find nodes around the path
         around_path_nodes_set = set()
         for edge in self.graph_edges:
@@ -356,13 +352,7 @@ class GraphResult(object):
             if start_node in path_nodes_set and end_node in path_nodes_set:
                 format_edge = self._formatPathEdge(start_node, end_node) 
                 if format_edge in path_edges2path_ids:
-                    #path ids are rewritten as 1, 2 ,4, 8, 16. so the sum will not be repeated
-                    #and we map the 1, 2, 4 to 1, 2, 3
-                    current_color_value = sum(path_edges2path_ids[format_edge])
-                    if current_color_value not in exist_color_map:
-                        current_color_index = len(exist_color_map)
-                        exist_color_map[current_color_value] = current_color_index
-                    edge['color'] = exist_color_map[current_color_value] 
+                    edge['color'] = min(path_edges2path_ids[format_edge])
                     edge['length'] = 400 + random.random()*100
                     edge['opacity'] = 1.0
             elif start_node in path_nodes_set:
