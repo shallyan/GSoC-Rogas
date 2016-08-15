@@ -1,5 +1,5 @@
 #![Logo](https://cecs.anu.edu.au/sites/default/files/styles/anu_doublenarrow_440_scale/public/images/rogas-web.jpg?itok=JfEfhc1_)
-Rogas is a project for Network Analytics
+Rogas(https://github.com/CornucopiaRG/Rogas) is a project for Network Analytics
 
 ## Introduction
 Rogas not only can provides a high-level declarative query language to 
@@ -25,8 +25,20 @@ My work is contained in this repository, not including the file in Rogas which i
 - Design and implement the visualisation of graph operations(CREATE, RANK, PATH, CLUSTER) 
 - Design and implement the backend server and modify Rogas for connecting to front-end
 
-## Work Screenshots
+## Main Features
+- List information about entities and relationships of the relational core and materialised graphs
+- Database info panel can be customised by users
+- Query input panel can be extended to a larger space for complicated queries
+- Query and its results as browser tabs
+- Asynchronous execution with loading animation
+- Support paged loading for large tables 
+- Support Graph creation, rank, path, cluster visualization
+- Support large graph visualization
+- Support drag, doubleclick, zoom in/out operations and so on 
+- Support relation - graph data mapping
+- Support dynamic setting
 
+## Work Screenshots
 - Graph CREATION Operation
 ![create](http://ww1.sinaimg.cn/large/005WEw7ygw1f6ui3u7iy9j31kw0zkqgk.jpg)
 
@@ -57,7 +69,14 @@ My work is contained in this repository, not including the file in Rogas which i
 * SNAP: http://snap.stanford.edu/snappy/index.html
 * NetworkX: http://networkx.github.io/  
 
+Note: If you use Mac OS, the Graph-tool installed doesn't support OpenMP by default, so that you need set IS\_GRAPH\_TOOL\_OPENMP = False in rogas/config.py.
+<br>
+<br>
 We also make use of Bootstrap(http://getbootstrap.com/), D3.js(https://d3js.org) and ExpandingTextareas(https://github.com/bgrins/ExpandingTextareas), which are integrated into the system so that you don't need install them by yourself.
+
+## How to Run
+- Set up your database information in rogas.config.py to connect to Postgresql
+- Python run.py
 
 ## More Information
 More details about the Rogas, please refer to 
