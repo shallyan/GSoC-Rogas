@@ -43,15 +43,15 @@ My work is contained in this repository, not including the file in Rogas which i
 - 2) Find nodes around the path
 
 ## Main Features
-- List information about entities and relationships of the relational core and materialised graphs
+- Database info panel can show the schema information of relations and graphs in the database
 - Database info panel can be customised by users
 - Query input panel can be extended to a larger space for complicated queries
-- Query and its results as browser tabs
+- Show queries and their results as browser-tab style
 - Asynchronous execution with loading animation
 - Support paged loading for large tables 
 - Support graph creation, rank, path, cluster visualization
 - Support large graph visualization
-- Support drag, doubleclick, zoom in/out operations and so on 
+- Support interactive operations on graphs (drag, double click, zoom in/out) 
 - Support relation - graph data mapping
 - Support dynamic setting
 
@@ -65,14 +65,11 @@ My work is contained in this repository, not including the file in Rogas which i
 - Graph RANK Operation: Graph Visualization
 ![rankgraph](http://ww4.sinaimg.cn/large/005WEw7yjw1f6uiak0rjuj31kw0zkwrz.jpg)
 
-- Graph PATH Operation: Graph Visualization
-![path](http://ww3.sinaimg.cn/large/005WEw7yjw1f6uib6bntxj31kw0zkn4y.jpg)
-
 - Graph CLUSTER Operation: Graph Visualization
 ![cluster](http://ww3.sinaimg.cn/large/005WEw7yjw1f6uig5hos1j31kw0zk12k.jpg)
 
-- Relation - Graph Data Mapping
-![map](http://ww4.sinaimg.cn/large/005WEw7yjw1f6uigv6b59j31kw0zkdna.jpg)
+- Graph PATH Operation: Graph Visualization and Relation - Graph Data Mapping
+![path_graph](http://ww4.sinaimg.cn/large/6d74e8d4gw1f6wrfkp4rnj213l0negpt.jpg)
 
 - Database Info
 ![dbinfo](http://ww3.sinaimg.cn/large/005WEw7ygw1f6uiicglh4j31kw0zkagj.jpg)
@@ -89,11 +86,12 @@ My work is contained in this repository, not including the file in Rogas which i
 Note: If you use Mac OS, the Graph-tool installed doesn't support OpenMP by default, so that you need set IS\_GRAPH\_TOOL\_OPENMP = False in rogas/config.py.
 <br>
 <br>
-We also make use of Bootstrap(http://getbootstrap.com/), D3.js(https://d3js.org) and ExpandingTextareas(https://github.com/bgrins/ExpandingTextareas), which are integrated into the system so that you don't need install them by yourself.
+We also make use of Bootstrap(http://getbootstrap.com/), D3.js(https://d3js.org) and ExpandingTextareas(https://github.com/bgrins/ExpandingTextareas), which are integrated into the system so you don't need install them by yourself.
 
 ## How to Run
-- Set up your database information in rogas.config.py to connect to Postgresql
+- Set up your database information in rogas/config.py to connect to Postgresql
 - Python run.py
+- Open the browser by entering http://localhost:12345/
 
 ## Future Work
 - 1) More informative name of query tabs
