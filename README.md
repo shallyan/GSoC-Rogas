@@ -97,7 +97,7 @@ We also make use of Bootstrap(http://getbootstrap.com/), D3.js(https://d3js.org)
 
 ## Future Work
 - 1) More informative name of query tabs
-- 2) Reduce the discreteness of large graph when max display node is small
+- 2) Reduce the discreteness of large graph when max number of display nodes is small
 - 3) More distinguishability in PATH visualization when the number of paths increases
 
 ## More Information
